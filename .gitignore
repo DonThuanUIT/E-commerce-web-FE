@@ -30,3 +30,7 @@ coverage
 .env
 .env.*
 !.env.example
+
+# Local coding assistant instructions and skills
+/.agents/
+/AGENTS.md
