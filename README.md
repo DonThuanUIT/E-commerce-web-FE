@@ -34,6 +34,7 @@ proxied to the backend at `http://localhost:8080` (see `vite.config.ts`).
 | `npm run format:check` | Check formatting without changing files                           |
 | `npm run typecheck`    | Check both application and Vite configuration TypeScript projects |
 | `npm run check`        | Run formatting, lint and TypeScript checks                        |
+| `npm run test:api`     | Test HTTP response/error handling with Node's built-in runner     |
 
 Before opening a pull request, run:
 
@@ -87,7 +88,54 @@ If a hook fails, fix the reported issue, stage the changes and retry the commit.
 
 ## Environment files
 
-Local `.env` files are ignored by Git. If environment configuration is added,
-document variable names and safe example values in a tracked `.env.example`.
+Local `.env` files are ignored by Git. Copy `.env.example` to `.env` to override
+the API root. `VITE_BE_API_URL` defaults to `/api`, using the Vite development
+proxy. For a separate backend origin, set it to a URL including the API prefix,
+such as `https://api.example.com/api`; that backend must allow frontend CORS.
+Production hosting must proxy `/api` or supply this variable at build time.
 Variables exposed through Vite's `VITE_` prefix are public browser configuration
 and must not contain secrets.
+
+## HTTP client
+
+Import `axiosInstance` from `src/config/axios.ts` in feature services. It uses a
+10-second timeout, accepts JSON and requests Vietnamese responses. Axios sets the
+request content type based on the body, including JSON for plain objects.
+Endpoint paths are relative to the API root: use `/users`, not `/api/users`.
+
+The response interceptor preserves `AxiosResponse`, including status and headers,
+as in `tidala-mobile`. Read the CNWeb envelope through `response.data`, then narrow
+`success` to access its payload. Types live in `src/shared/types/apiType.ts`;
+use `ApiResponse<T | null>` when an operation can return null data.
+
+```ts
+// Inside src/features/<feature>/services/<service>.ts
+import { axiosInstance } from '../../../config/axios';
+import type { ApiResponse } from '../../../shared/types/apiType';
+
+const response = await axiosInstance.get<ApiResponse<unknown>>('/users', {
+  params: { page: 0, size: 20 },
+  signal, // Pass the caller's AbortSignal when available.
+});
+
+if (response.data.success) {
+  const payload = response.data.data;
+  // Map the payload in the feature service.
+}
+```
+
+Failures become `ApiRequestError` from `src/shared/api/apiRequestError.ts`.
+Use `instanceof ApiRequestError` to read `status`, `code`, `message`, `fieldErrors`,
+`timestamp` and optional `path`. HTTP failures retain their status; failures
+without an HTTP response use status `0`. Server envelopes are checked before
+their messages are used, and other errors receive safe fallback messages. The
+original error remains available as `cause`. Canceled requests stay Axios
+cancellation errors so callers can recognize them with `axios.isCancel`.
+
+The companion backend currently has no authentication or refresh-token contract.
+Token persistence, authorization headers, automatic refresh and logout redirects
+will be added when that contract exists. The client currently sends each request
+once and leaves UI error handling to its caller.
+
+Run `npm run test:api` for interceptor checks using mocked Axios adapters; these
+do not require a running backend or an additional test framework.

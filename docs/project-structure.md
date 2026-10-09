@@ -69,6 +69,12 @@ implemented.
   for application configuration when needed. Shared code must not depend on
   features.
 
+HTTP configuration lives in `src/config/axios.ts`, with response handling in
+`src/config/interceptors/responseInterceptor.ts`. Feature services use that shared
+client. Backend envelope types live in `src/shared/types/apiType.ts`, and normalized
+request errors in `src/shared/api/apiRequestError.ts`. These modules do not depend
+on features or routing. See [HTTP client usage](../README.md#http-client).
+
 ## Adding another page
 
 1. Implement and export its feature entry from `features/<feature>/index.ts`.
