@@ -1,4 +1,8 @@
-/** Placeholder for the registration feature; UI and behavior are not implemented yet. */
+/**
+ * Reserves the registration entry while its UI and behavior are unimplemented.
+ *
+ * @returns {null} Renders no content while registration remains unimplemented.
+ */
 const Register = () => {
   return null;
 };
