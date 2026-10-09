@@ -7,6 +7,7 @@ explicitly defined in `src/routes/`.
 ```text
 src/
 ├── app/
+│   ├── app.css                   # Global Tailwind stylesheet
 │   ├── main.tsx                  # Mount React
 │   └── app.tsx                   # Render the router provider
 ├── routes/

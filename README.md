@@ -57,6 +57,22 @@ format supported files on save and apply ESLint fixes when saving explicitly.
 Generated output, dependencies and the npm lockfile are excluded from Prettier.
 Let npm maintain `package-lock.json`.
 
+## Tailwind CSS
+
+Tailwind CSS v4 runs through the `@tailwindcss/vite` plugin in `vite.config.ts`.
+The global stylesheet, `src/app/app.css`, imports Tailwind and is loaded once by
+`src/app/main.tsx`, making its base styles and utilities available to every route.
+
+Use complete utility names in JSX, for example
+`className="p-4 text-lg font-semibold md:p-6"`. Tailwind detects classes in source
+files automatically; avoid building class names from partial strings.
+Add shared theme tokens with `@theme` in `src/app/app.css` when the design needs
+them. This setup does not need a `tailwind.config.js` or a separate PostCSS plugin.
+
+Install the recommended Tailwind CSS IntelliSense VS Code extension for class
+completion and hover previews. See the
+[official Vite setup](https://tailwindcss.com/docs/installation/using-vite).
+
 ## Git hooks and commit messages
 
 - `pre-commit`: lint-staged runs ESLint fixes and Prettier on staged JS/TS files,
