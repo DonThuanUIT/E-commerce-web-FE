@@ -32,5 +32,10 @@ coverage
 !.env.example
 
 # Local coding assistant instructions and skills
-/.agents/
+.agent/
+.agents/
 /AGENTS.md
+GEMINI.md
+
+# local docs
+/mydocs

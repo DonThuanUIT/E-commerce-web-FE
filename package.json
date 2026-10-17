@@ -16,6 +16,7 @@
     "format:check": "prettier --check .",
     "typecheck": "tsc -b",
     "check": "npm run format:check && npm run lint && npm run typecheck",
+    "test": "node --experimental-strip-types --test tests/apiClient.test.mjs tests/authValidation.test.mjs tests/authService.test.mjs",
     "test:api": "node --experimental-strip-types --test tests/apiClient.test.mjs",
     "preview": "vite preview",
     "prepare": "husky"
