@@ -13,7 +13,7 @@ export interface EditorialSlide {
 const EDITORIAL_SLIDES: EditorialSlide[] = [
   {
     id: 'slide-1',
-    image: '/images/auth-editorial.png',
+    image: '/images/auth-editorial-hd.jpg',
     capsuleTag: 'Autumn / Winter Capsule',
     editionNumber: 'N° 04 / 24',
     statement:
@@ -23,7 +23,7 @@ const EDITORIAL_SLIDES: EditorialSlide[] = [
   {
     id: 'slide-2',
     image:
-      'https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?auto=format&fit=crop&w=1200&q=85',
+      'https://images.unsplash.com/photo-1594655151525-cc979fc9bf8b?auto=format&fit=crop&w=1600&q=85',
     capsuleTag: 'Master Atelier Collection',
     editionNumber: 'N° 08 / 24',
     statement:
@@ -33,7 +33,7 @@ const EDITORIAL_SLIDES: EditorialSlide[] = [
   {
     id: 'slide-3',
     image:
-      'https://images.unsplash.com/photo-1539109136881-3be0616acf4b?auto=format&fit=crop&w=1200&q=85',
+      'https://images.unsplash.com/photo-1539109136881-3be0616acf4b?auto=format&fit=crop&w=1600&q=85',
     capsuleTag: 'Monolith Minimal Series',
     editionNumber: 'N° 12 / 24',
     statement:
@@ -43,7 +43,7 @@ const EDITORIAL_SLIDES: EditorialSlide[] = [
   {
     id: 'slide-4',
     image:
-      'https://images.unsplash.com/photo-1509631179647-0177331693ae?auto=format&fit=crop&w=1200&q=85',
+      'https://images.unsplash.com/photo-1509631179647-0177331693ae?auto=format&fit=crop&w=1600&q=85',
     capsuleTag: 'Cashmere & Silk Capsule',
     editionNumber: 'N° 18 / 24',
     statement:
@@ -99,7 +99,7 @@ export const EditorialHero: React.FC = () => {
           onError={(e) => {
             // Fallback to local image if network fails
             (e.currentTarget as HTMLImageElement).src =
-              '/images/auth-editorial.png';
+              '/images/auth-editorial-hd.jpg';
           }}
           className={`absolute inset-0 h-full w-full object-cover object-top transition-opacity duration-1000 ease-in-out ${
             idx === currentIndex ? 'opacity-100' : 'opacity-0'
