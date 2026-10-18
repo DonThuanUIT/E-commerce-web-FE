@@ -17,14 +17,14 @@ const Login: React.FC = () => {
   };
 
   return (
-    <div className="flex min-h-screen w-full flex-col bg-white lg:flex-row">
+    <div className="flex h-screen max-h-screen w-full flex-col overflow-hidden bg-white lg:flex-row">
       {/* Left Column: Dynamic Editorial Fashion Carousel */}
       <EditorialHero />
 
       {/* Right Column: Sign In Form */}
-      <div className="flex w-full flex-1 flex-col justify-between overflow-y-auto px-6 py-8 sm:px-12 sm:py-10 md:px-16 lg:w-1/2 lg:px-16 xl:px-24">
+      <div className="flex h-full w-full flex-1 flex-col justify-between overflow-y-auto px-6 py-4 sm:px-10 sm:py-5 md:px-12 lg:w-1/2 lg:px-10 xl:px-14">
         {/* Top Header Navigation */}
-        <div className="flex items-center justify-between">
+        <div className="flex shrink-0 items-center justify-between">
           <Link
             to="/"
             className="group inline-flex items-center gap-2 text-xs font-medium tracking-wider text-neutral-600 transition hover:text-black uppercase"
@@ -38,34 +38,34 @@ const Login: React.FC = () => {
         </div>
 
         {/* Form Container */}
-        <div className="mx-auto my-auto w-full max-w-md py-8">
+        <div className="mx-auto my-auto w-full max-w-sm xl:max-w-md py-1">
           {/* Segmented Tab Switcher */}
-          <div className="mb-8 grid grid-cols-2 rounded-xl bg-neutral-100 p-1 text-xs">
-            <span className="rounded-lg bg-white py-2.5 text-center font-semibold text-neutral-900 shadow-sm transition">
+          <div className="mb-2.5 sm:mb-3 grid grid-cols-2 rounded-xl bg-neutral-100 p-1 text-xs">
+            <span className="rounded-lg bg-white py-1.5 text-center font-semibold text-neutral-900 shadow-sm transition">
               Sign In
             </span>
             <Link
               to="/auth/register"
-              className="rounded-lg py-2.5 text-center font-medium text-neutral-500 transition hover:text-neutral-900"
+              className="rounded-lg py-1.5 text-center font-medium text-neutral-500 transition hover:text-neutral-900"
             >
               Create Account
             </Link>
           </div>
 
-          <div className="mb-6">
-            <h1 className="text-3xl font-normal tracking-tight text-neutral-900 sm:text-4xl">
+          <div className="mb-2 sm:mb-2.5">
+            <h1 className="text-2xl font-normal tracking-tight text-neutral-900 sm:text-3xl">
               Welcome Back
             </h1>
-            <p className="mt-2 text-xs leading-relaxed text-neutral-500 sm:text-sm">
+            <p className="mt-0.5 text-xs text-neutral-500">
               Access your bespoke orders, curated wishlist, and personal atelier
               concierge.
             </p>
           </div>
 
-          <form onSubmit={handleSubmit} className="space-y-4">
+          <form onSubmit={handleSubmit} className="space-y-2 sm:space-y-2.5">
             {/* Email Address */}
             <div>
-              <div className="mb-1.5 flex items-center justify-between text-xs">
+              <div className="mb-1 flex items-center justify-between text-xs">
                 <label
                   htmlFor="login-email"
                   className="text-[11px] font-semibold tracking-wider text-neutral-700 uppercase"
@@ -80,13 +80,13 @@ const Login: React.FC = () => {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="elena.rostova@maison.vn"
-                className="w-full rounded-lg border border-neutral-200 px-3.5 py-3 text-sm text-neutral-900 placeholder-neutral-400 transition focus:border-black focus:outline-none focus:ring-1 focus:ring-black"
+                className="w-full rounded-lg border border-neutral-200 px-3 py-2 text-xs sm:text-sm text-neutral-900 placeholder-neutral-400 transition focus:border-black focus:outline-none focus:ring-1 focus:ring-black"
               />
             </div>
 
             {/* Password */}
             <div>
-              <div className="mb-1.5 flex items-center justify-between text-xs">
+              <div className="mb-1 flex items-center justify-between text-xs">
                 <label
                   htmlFor="login-password"
                   className="text-[11px] font-semibold tracking-wider text-neutral-700 uppercase"
@@ -101,13 +101,13 @@ const Login: React.FC = () => {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="••••••••••••"
-                  className="w-full rounded-lg border border-neutral-200 px-3.5 py-3 pr-10 text-sm text-neutral-900 placeholder-neutral-400 transition focus:border-black focus:outline-none focus:ring-1 focus:ring-black"
+                  className="w-full rounded-lg border border-neutral-200 px-3 py-2 pr-9 text-xs sm:text-sm text-neutral-900 placeholder-neutral-400 transition focus:border-black focus:outline-none focus:ring-1 focus:ring-black"
                 />
                 <button
                   type="button"
                   tabIndex={-1}
                   onClick={() => setShowPassword((prev) => !prev)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-neutral-400 transition hover:text-neutral-700 cursor-pointer"
+                  className="absolute right-2.5 top-1/2 -translate-y-1/2 text-neutral-400 transition hover:text-neutral-700 cursor-pointer"
                 >
                   {showPassword ? (
                     <EyeOff className="h-4 w-4" />
@@ -119,19 +119,21 @@ const Login: React.FC = () => {
             </div>
 
             {/* Remember & Forgot Password */}
-            <div className="flex items-center justify-between pt-1 text-xs">
+            <div className="flex items-center justify-between pt-0.5 text-xs">
               <label className="flex items-center gap-2 cursor-pointer select-none">
                 <input
                   type="checkbox"
                   checked={rememberMe}
                   onChange={(e) => setRememberMe(e.target.checked)}
-                  className="h-4 w-4 rounded border-neutral-300 accent-black text-black focus:ring-black"
+                  className="h-3.5 w-3.5 rounded border-neutral-300 accent-black text-black focus:ring-black"
                 />
-                <span className="text-neutral-600">Remember this device</span>
+                <span className="text-[11px] text-neutral-600">
+                  Remember this device
+                </span>
               </label>
               <a
                 href="#forgot"
-                className="text-neutral-500 transition hover:text-neutral-900"
+                className="text-[11px] text-neutral-500 transition hover:text-neutral-900"
               >
                 Forgot Password?
               </a>
@@ -140,7 +142,7 @@ const Login: React.FC = () => {
             {/* Submit Button */}
             <button
               type="submit"
-              className="mt-2 flex w-full items-center justify-center gap-2 rounded-lg bg-black py-3.5 px-4 text-xs font-semibold tracking-widest text-white uppercase transition hover:bg-neutral-800 cursor-pointer shadow-sm active:scale-[0.99]"
+              className="mt-1 flex w-full items-center justify-center gap-2 rounded-lg bg-black py-2.5 sm:py-3 px-4 text-xs font-semibold tracking-widest text-white uppercase transition hover:bg-neutral-800 cursor-pointer shadow-sm active:scale-[0.99]"
             >
               <span>SIGN IN</span>
               <ArrowRight className="h-3.5 w-3.5" />
@@ -148,22 +150,22 @@ const Login: React.FC = () => {
           </form>
 
           {/* Divider */}
-          <div className="relative my-6 text-center">
+          <div className="relative my-2 sm:my-2.5 text-center">
             <div className="absolute inset-0 flex items-center">
               <div className="w-full border-t border-neutral-200" />
             </div>
-            <span className="relative bg-white px-3 text-[10px] font-semibold tracking-widest text-neutral-400 uppercase">
+            <span className="relative bg-white px-2.5 text-[9px] sm:text-[10px] font-semibold tracking-widest text-neutral-400 uppercase">
               Or Continue With
             </span>
           </div>
 
           {/* Social Login Options */}
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-2 gap-2.5">
             <button
               type="button"
-              className="flex items-center justify-center gap-2 rounded-lg border border-neutral-200 bg-white py-3 px-4 text-xs font-medium text-neutral-700 transition hover:bg-neutral-50 cursor-pointer"
+              className="flex items-center justify-center gap-2 rounded-lg border border-neutral-200 bg-white py-2 px-3 text-xs font-medium text-neutral-700 transition hover:bg-neutral-50 cursor-pointer"
             >
-              <svg className="h-4 w-4" viewBox="0 0 24 24">
+              <svg className="h-3.5 w-3.5" viewBox="0 0 24 24">
                 <path
                   fill="#4285F4"
                   d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
@@ -185,9 +187,9 @@ const Login: React.FC = () => {
             </button>
             <button
               type="button"
-              className="flex items-center justify-center gap-2 rounded-lg border border-neutral-200 bg-white py-3 px-4 text-xs font-medium text-neutral-700 transition hover:bg-neutral-50 cursor-pointer"
+              className="flex items-center justify-center gap-2 rounded-lg border border-neutral-200 bg-white py-2 px-3 text-xs font-medium text-neutral-700 transition hover:bg-neutral-50 cursor-pointer"
             >
-              <svg className="h-4 w-4 fill-[#1877F2]" viewBox="0 0 24 24">
+              <svg className="h-3.5 w-3.5 fill-[#1877F2]" viewBox="0 0 24 24">
                 <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
               </svg>
               <span>Facebook</span>
@@ -196,8 +198,8 @@ const Login: React.FC = () => {
         </div>
 
         {/* Footer info & Concierge */}
-        <div className="pt-6 text-center">
-          <p className="text-[11px] leading-relaxed text-neutral-400">
+        <div className="pt-2 shrink-0 text-center">
+          <p className="text-[10px] sm:text-[11px] leading-relaxed text-neutral-400">
             By continuing, you agree to ATELIER's{' '}
             <a
               href="#terms"
@@ -214,8 +216,8 @@ const Login: React.FC = () => {
             </a>
             .
           </p>
-          <div className="mt-3 flex items-center justify-center gap-2 text-[10px] font-semibold tracking-widest text-neutral-400 uppercase">
-            <Headphones className="h-3.5 w-3.5" />
+          <div className="mt-1 flex items-center justify-center gap-1.5 text-[10px] font-semibold tracking-widest text-neutral-400 uppercase">
+            <Headphones className="h-3 w-3" />
             <span>Concierge Assistance Available 24/7</span>
           </div>
         </div>

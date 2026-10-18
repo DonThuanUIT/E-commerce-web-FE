@@ -86,7 +86,7 @@ export const EditorialHero: React.FC = () => {
 
   return (
     <div
-      className="group relative hidden w-full overflow-hidden bg-neutral-900 text-white lg:flex lg:w-1/2"
+      className="group relative hidden h-full w-full overflow-hidden bg-neutral-900 text-white lg:flex lg:w-1/2"
       onMouseEnter={() => setIsPaused(true)}
       onMouseLeave={() => setIsPaused(false)}
     >
@@ -111,7 +111,7 @@ export const EditorialHero: React.FC = () => {
       <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/25 to-black/35" />
 
       {/* Foreground Content */}
-      <div className="relative z-10 flex h-full w-full flex-col justify-between p-8 xl:p-12">
+      <div className="relative z-10 flex h-full w-full flex-col justify-between p-6 sm:p-8 xl:p-10">
         {/* Top Bar: Capsule Badge & Edition Number */}
         <div className="flex items-center justify-between">
           <span className="inline-flex items-center gap-1.5 rounded-full bg-white/95 px-3 py-1 text-[10px] font-semibold tracking-widest text-neutral-900 uppercase backdrop-blur-md shadow-sm transition-all duration-500">
@@ -124,23 +124,23 @@ export const EditorialHero: React.FC = () => {
         </div>
 
         {/* Bottom Section: Statement, Branding & Carousel Controls */}
-        <div className="space-y-6">
-          <div className="max-w-lg space-y-4">
+        <div className="space-y-4">
+          <div className="max-w-lg space-y-2.5">
             <p className="text-[10px] font-semibold tracking-widest text-white/70 uppercase">
               Collection Statement
             </p>
-            <h2 className="min-h-[5.5rem] font-serif text-2xl font-light leading-snug tracking-tight text-white transition-opacity duration-500 sm:text-3xl xl:text-4xl">
+            <h2 className="min-h-[4rem] font-serif text-xl font-light leading-snug tracking-tight text-white transition-opacity duration-500 sm:text-2xl xl:text-3xl">
               {activeSlide.statement}
             </h2>
-            <div className="flex items-center gap-3 pt-2 text-xs font-light tracking-wider text-white/80">
+            <div className="flex items-center gap-3 pt-1 text-xs font-light tracking-wider text-white/80">
               <span>{activeSlide.collection.split('—')[0]?.trim()}</span>
-              <span className="h-px w-6 bg-white/40" />
+              <span className="h-px w-5 bg-white/40" />
               <span>{activeSlide.collection.split('—')[1]?.trim()}</span>
             </div>
           </div>
 
           {/* Carousel Slide Indicators & Arrows */}
-          <div className="flex items-center justify-between border-t border-white/20 pt-4">
+          <div className="flex items-center justify-between border-t border-white/20 pt-3">
             {/* Dash / Bar Indicators */}
             <div className="flex items-center gap-2">
               {EDITORIAL_SLIDES.map((slide, idx) => (
