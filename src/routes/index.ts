@@ -2,15 +2,16 @@ import { createBrowserRouter } from 'react-router-dom';
 import { authRoutes } from './authRoutes';
 import { homeRoutes } from './homeRoutes';
 import { productRoutes } from './productRoutes';
+import { staffRoutes } from './staffRoutes';
+import { auditLogRoutes } from './auditLogRoutes';
 
 /**
- * Shared browser-history router composing home, auth, and product detail routes.
- *
- * Created once when this module loads and supplied to the application provider.
- * Page files are registered explicitly through the imported route groups.
+ * Shared browser-history router composing all application routes.
  */
 export const router = createBrowserRouter([
   ...homeRoutes,
   ...authRoutes,
   ...productRoutes,
+  ...staffRoutes,
+  ...auditLogRoutes,
 ]);
