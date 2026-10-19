@@ -82,3 +82,5 @@ on features or routing. See [HTTP client usage](../README.md#http-client).
 2. Add a `pages/<segment>/page.tsx` component that renders that entry.
 3. Define its URL and page component in `routes/<feature>Routes.ts` and include
    that route group in `routes/index.ts`.
+
+For full architectural standards, state management hierarchy, and design tokens, see [architecture-and-standards.md](./architecture-and-standards.md).
