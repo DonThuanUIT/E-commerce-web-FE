@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+﻿import React, { useState } from 'react';
 import { X, UserPlus, AlertCircle, Loader2 } from 'lucide-react';
 import type { CreateStaffCommand, StaffRole } from '../types/staffType';
 
@@ -67,7 +67,7 @@ export const AddStaffModal: React.FC<AddStaffModalProps> = ({
               <UserPlus className="h-5 w-5" />
             </div>
             <div>
-              <h2 className="text-base font-bold text-gray-900 font-serif uppercase">
+              <h2 className="text-base font-bold text-gray-900 uppercase">
                 Thêm Nhân Viên Mới
               </h2>
               <p className="text-xs text-gray-500">

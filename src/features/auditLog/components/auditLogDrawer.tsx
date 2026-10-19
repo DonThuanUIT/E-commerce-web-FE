@@ -1,4 +1,4 @@
-import React from 'react';
+﻿import React from 'react';
 import {
   X,
   ShieldAlert,
@@ -52,7 +52,7 @@ export const AuditLogDrawer: React.FC<AuditLogDrawerProps> = ({
                   <ShieldAlert className="h-5 w-5" />
                 </div>
                 <div>
-                  <h2 className="text-sm font-bold text-gray-900 font-serif uppercase">
+                  <h2 className="text-sm font-bold text-gray-900 uppercase">
                     Chi Tiết Nhật Ký Kiểm Toán
                   </h2>
                   <p className="text-[11px] font-mono text-gray-500">

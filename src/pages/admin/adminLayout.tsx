@@ -1,4 +1,4 @@
-import React from 'react';
+﻿import React from 'react';
 import { NavLink, Outlet, useLocation } from 'react-router-dom';
 import {
   LayoutDashboard,
@@ -102,11 +102,11 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
           {/* Top Brand Header (Figma EL-80625a07) */}
           <div className="h-16 flex items-center justify-between px-5 border-b border-gray-200">
             <div className="flex items-center gap-2.5">
-              <div className="flex h-7 w-7 items-center justify-center rounded bg-black text-white font-serif font-bold text-xs tracking-widest">
+              <div className="flex h-7 w-7 items-center justify-center rounded bg-black text-white font-bold text-xs tracking-widest">
                 A
               </div>
               <div>
-                <span className="font-serif font-semibold tracking-wider text-sm text-gray-900 uppercase block leading-tight">
+                <span className="font-semibold tracking-wider text-sm text-gray-900 uppercase block leading-tight">
                   ATELIER
                 </span>
                 <span className="text-[10px] tracking-widest text-gray-600 uppercase block font-mono">

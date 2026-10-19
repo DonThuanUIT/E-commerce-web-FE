@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+﻿import React, { useEffect, useState } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 
 export interface EditorialSlide {
@@ -129,7 +129,7 @@ export const EditorialHero: React.FC = () => {
             <p className="text-[10px] font-semibold tracking-widest text-white/70 uppercase">
               Collection Statement
             </p>
-            <h2 className="min-h-[5.5rem] font-serif text-2xl font-light leading-snug tracking-tight text-white transition-opacity duration-500 sm:text-3xl xl:text-4xl">
+            <h2 className="min-h-[5.5rem] text-2xl font-light leading-snug tracking-tight text-white transition-opacity duration-500 sm:text-3xl xl:text-4xl">
               {activeSlide.statement}
             </h2>
             <div className="flex items-center gap-3 pt-2 text-xs font-light tracking-wider text-white/80">

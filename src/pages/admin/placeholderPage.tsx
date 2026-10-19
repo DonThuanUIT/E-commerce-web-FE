@@ -1,4 +1,4 @@
-import React from 'react';
+﻿import React from 'react';
 import { useLocation, Link } from 'react-router-dom';
 import {
   LayoutDashboard,
@@ -109,7 +109,7 @@ export const PlaceholderAdminPage: React.FC = () => {
         </div>
 
         {/* Heading */}
-        <h1 className="text-2xl sm:text-3xl font-serif font-bold text-gray-900 uppercase tracking-tight mb-3">
+        <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 uppercase tracking-tight mb-3">
           {meta.title}
         </h1>
 

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+﻿import React, { useState } from 'react';
 import { X, ShieldAlert, Loader2, AlertCircle } from 'lucide-react';
 import type { StaffMember, StaffRole } from '../types/staffType';
 
@@ -56,7 +56,7 @@ export const ChangeRoleModal: React.FC<ChangeRoleModalProps> = ({
               <ShieldAlert className="h-5 w-5" />
             </div>
             <div>
-              <h2 className="text-base font-bold text-gray-900 font-serif uppercase">
+              <h2 className="text-base font-bold text-gray-900 uppercase">
                 Thay Đổi Vai Trò
               </h2>
               <p className="text-xs text-gray-500">

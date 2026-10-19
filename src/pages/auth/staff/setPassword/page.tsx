@@ -1,4 +1,4 @@
-import React from 'react';
+﻿import React from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { SetPasswordForm } from '../../../../features/staff';
 
@@ -12,7 +12,7 @@ export const StaffSetPasswordPage: React.FC = () => {
         <SetPasswordForm token={token} />
       ) : (
         <div className="w-full max-w-md rounded-2xl bg-white border border-gray-200 p-8 text-center text-gray-700 shadow-md">
-          <p className="font-semibold text-rose-600 font-serif uppercase">
+          <p className="font-semibold text-rose-600 uppercase">
             Mã kích hoạt không hợp lệ hoặc bị thiếu
           </p>
           <p className="text-xs text-gray-500 mt-2">
