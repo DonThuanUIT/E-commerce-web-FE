@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+﻿import React, { useState } from 'react';
 import { KeyRound, CheckCircle2, AlertCircle, Loader2 } from 'lucide-react';
 import { useSetStaffPassword } from '../hooks/useStaff';
 
@@ -55,7 +55,7 @@ export const SetPasswordForm: React.FC<SetPasswordFormProps> = ({ token }) => {
         <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-emerald-50 border border-emerald-200 text-emerald-600 mb-4">
           <CheckCircle2 className="h-6 w-6" />
         </div>
-        <h2 className="text-lg font-bold text-gray-900 font-serif uppercase">
+        <h2 className="text-lg font-bold text-gray-900 uppercase">
           Thiết Lập Mật Khẩu Thành Công
         </h2>
         <p className="text-xs text-gray-600 mt-2 leading-relaxed">
@@ -79,7 +79,7 @@ export const SetPasswordForm: React.FC<SetPasswordFormProps> = ({ token }) => {
           <KeyRound className="h-5 w-5" />
         </div>
         <div>
-          <h2 className="text-base font-bold text-gray-900 font-serif uppercase">
+          <h2 className="text-base font-bold text-gray-900 uppercase">
             Thiết Lập Mật Khẩu Ban Đầu
           </h2>
           <p className="text-xs text-gray-500">

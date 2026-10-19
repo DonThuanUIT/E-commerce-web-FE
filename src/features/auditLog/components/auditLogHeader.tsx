@@ -1,4 +1,4 @@
-import React from 'react';
+﻿import React from 'react';
 import { History, ShieldCheck, RefreshCw } from 'lucide-react';
 
 interface AuditLogHeaderProps {
@@ -25,7 +25,7 @@ export const AuditLogHeader: React.FC<AuditLogHeaderProps> = ({
             <History className="h-5 w-5" />
           </div>
           <div>
-            <h1 className="text-xl font-bold tracking-tight text-gray-900 font-serif uppercase">
+            <h1 className="text-xl font-bold tracking-tight text-gray-900 uppercase">
               NHẬT KÝ KIỂM TOÁN (AUDIT LOGS)
             </h1>
             <p className="text-xs text-gray-500 mt-0.5">

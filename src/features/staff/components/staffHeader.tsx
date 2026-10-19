@@ -1,4 +1,4 @@
-import React from 'react';
+﻿import React from 'react';
 import { Plus, Users, ShieldCheck, UserX } from 'lucide-react';
 
 interface StaffHeaderProps {
@@ -27,7 +27,7 @@ export const StaffHeader: React.FC<StaffHeaderProps> = ({
             <Users className="h-5 w-5" />
           </div>
           <div>
-            <h1 className="text-xl font-bold tracking-tight text-gray-900 font-serif uppercase">
+            <h1 className="text-xl font-bold tracking-tight text-gray-900 uppercase">
               QUẢN LÝ NHÂN VIÊN & PHÂN QUYỀN
             </h1>
             <p className="text-xs text-gray-500 mt-0.5">

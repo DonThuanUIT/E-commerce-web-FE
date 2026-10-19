@@ -274,3 +274,16 @@ Trước khi tạo commit hoặc kết thúc task, AI Agent và lập trình vi�
 - [ ] Chạy `npm run format:check` định dạng code chuẩn Prettier.
 - [ ] Chạy `npm run lint` đạt 0 lỗi, 0 cảnh báo.
 - [ ] Chạy `npm run typecheck` vượt qua TypeScript toàn dự án.
+
+---
+
+## 8. Typography & Font Standards
+
+Toàn bộ ứng dụng sử dụng hệ thống font chuẩn đồng nhất, hỗ trợ 100% tiếng Việt có dấu:
+
+1. **Font giao diện chính (Default Sans-serif):** Inter
+   - Cấu hình qua --font-sans và --font-serif (được map về Inter trong pp.css).
+   - Mọi trang (Admin, Storefront, Auth, v.v.) tự động kế thừa font từ :root và ody.
+   - **Tuyệt đối không dùng class ont-serif** hoặc các font không hỗ trợ đầy đủ bộ ký tự tiếng Việt (tránh lỗi vỡ dấu thanh trên Windows/trình duyệt).
+2. **Font kỹ thuật (Monospace):** JetBrains Mono
+   - Dùng cho UUID, ID, IP address, mã nguồn, timestamps và JSON diff viewer qua class ont-mono.

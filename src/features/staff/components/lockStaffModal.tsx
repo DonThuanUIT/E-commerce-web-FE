@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+﻿import React, { useState } from 'react';
 import { Lock, Unlock, AlertTriangle, Loader2 } from 'lucide-react';
 import type { StaffMember } from '../types/staffType';
 
@@ -59,7 +59,7 @@ export const LockStaffModal: React.FC<LockStaffModalProps> = ({
             )}
           </div>
           <div>
-            <h3 className="text-base font-bold text-gray-900 font-serif uppercase">
+            <h3 className="text-base font-bold text-gray-900 uppercase">
               {isLocking
                 ? 'Xác nhận khoá tài khoản'
                 : 'Xác nhận mở khoá tài khoản'}
