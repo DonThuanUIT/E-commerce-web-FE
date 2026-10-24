@@ -126,7 +126,7 @@ test('normalizes network and timeout failures without exposing raw messages', as
       assert.equal(error.status, 0);
       assert.equal(error.message.includes('private'), false);
       if (code !== 'ERR_NETWORK') {
-        assert.match(error.message, /hết thời gian chờ/);
+        assert.match(error.message, /timed out/i);
       }
       return true;
     });
