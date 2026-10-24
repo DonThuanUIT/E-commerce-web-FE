@@ -27,7 +27,7 @@ export const auditLogService = {
     }
 
     throw new Error(
-      response.data?.error?.message || 'Không thể tải nhật ký kiểm toán',
+      response.data?.error?.message || 'Failed to load audit logs',
     );
   },
 
@@ -44,8 +44,7 @@ export const auditLogService = {
     }
 
     throw new Error(
-      response.data?.error?.message ||
-        'Không tìm thấy chi tiết nhật ký kiểm toán',
+      response.data?.error?.message || 'Audit log entry details not found',
     );
   },
 };

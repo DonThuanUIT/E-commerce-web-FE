@@ -4,13 +4,16 @@ import { AuditLogHeader } from './auditLogHeader';
 import { AuditLogFilters } from './auditLogFilters';
 import { AuditLogTable } from './auditLogTable';
 import { AuditLogDrawer } from './auditLogDrawer';
-import type { AuditLog } from '../types/auditLogType';
+import type { AuditLog, AuditLogQuery } from '../types/auditLogType';
 
 export const AuditLogManagement: React.FC = () => {
-  const [entityType, setEntityType] = useState('');
-  const [action, setAction] = useState('');
-  const [fromDate, setFromDate] = useState('');
-  const [toDate, setToDate] = useState('');
+  const [filters, setFilters] = useState<AuditLogQuery>({
+    entityType: undefined,
+    action: undefined,
+    actorId: undefined,
+    fromDate: undefined,
+    toDate: undefined,
+  });
   const [page, setPage] = useState(0);
   const pageSize = 20;
 
@@ -18,58 +21,63 @@ export const AuditLogManagement: React.FC = () => {
 
   const { data, isLoading, isError, error, refetch, isRefetching } =
     useAuditLogs({
-      entityType: entityType || undefined,
-      action: action || undefined,
-      fromDate: fromDate ? new Date(fromDate).toISOString() : undefined,
-      toDate: toDate
-        ? new Date(toDate + 'T23:59:59Z').toISOString()
-        : undefined,
+      ...filters,
       page,
       size: pageSize,
     });
 
-  const handleResetFilters = () => {
-    setEntityType('');
-    setAction('');
-    setFromDate('');
-    setToDate('');
+  const handleFilterChange = (newFilters: Partial<AuditLogQuery>) => {
+    setFilters((prev: AuditLogQuery) => ({ ...prev, ...newFilters }));
     setPage(0);
+  };
+
+  const handleResetFilters = () => {
+    setFilters({
+      entityType: undefined,
+      action: undefined,
+      actorId: undefined,
+      fromDate: undefined,
+      toDate: undefined,
+    });
+    setPage(0);
+  };
+
+  const handleExportJson = () => {
+    if (!data || !data.items.length) {
+      alert('No audit log records available to export as JSON');
+      return;
+    }
+    const blob = new Blob([JSON.stringify(data.items, null, 2)], {
+      type: 'application/json',
+    });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `atelier-audit-logs-${new Date().toISOString().slice(0, 10)}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
   };
 
   const totalCount = data?.totalElements || 0;
 
   return (
     <div className="p-4 sm:p-8 space-y-6 max-w-7xl mx-auto">
+      {/* Stitch Screen 10 Header with Bento Metric Cards */}
       <AuditLogHeader
         totalCount={totalCount}
         onRefresh={() => refetch()}
         isRefreshing={isRefetching}
+        onExportJson={handleExportJson}
       />
 
+      {/* Stitch Screen 10 Filters Strip */}
       <AuditLogFilters
-        entityType={entityType}
-        onEntityTypeChange={(val) => {
-          setEntityType(val);
-          setPage(0);
-        }}
-        action={action}
-        onActionChange={(val) => {
-          setAction(val);
-          setPage(0);
-        }}
-        fromDate={fromDate}
-        onFromDateChange={(val) => {
-          setFromDate(val);
-          setPage(0);
-        }}
-        toDate={toDate}
-        onToDateChange={(val) => {
-          setToDate(val);
-          setPage(0);
-        }}
+        filters={filters}
+        onFilterChange={handleFilterChange}
         onReset={handleResetFilters}
       />
 
+      {/* Stitch Screen 10 Dense Table with Inline Diff Expansion */}
       <AuditLogTable
         data={data}
         isLoading={isLoading}
@@ -79,6 +87,7 @@ export const AuditLogManagement: React.FC = () => {
         onSelectLog={(log) => setSelectedLog(log)}
       />
 
+      {/* Full Forensic Trace Drawer */}
       <AuditLogDrawer
         log={selectedLog}
         isOpen={Boolean(selectedLog)}

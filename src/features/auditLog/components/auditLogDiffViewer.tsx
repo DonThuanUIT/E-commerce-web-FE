@@ -1,16 +1,19 @@
 import React, { useState } from 'react';
-import { Code2, Split } from 'lucide-react';
+import { Code2, Split, Copy, Check } from 'lucide-react';
 
 interface AuditLogDiffViewerProps {
   beforeState: Record<string, unknown> | null;
   afterState: Record<string, unknown> | null;
+  reason?: string | null;
 }
 
 export const AuditLogDiffViewer: React.FC<AuditLogDiffViewerProps> = ({
   beforeState,
   afterState,
+  reason,
 }) => {
   const [viewMode, setViewMode] = useState<'diff' | 'raw'>('diff');
+  const [copied, setCopied] = useState(false);
 
   const before = beforeState || {};
   const after = afterState || {};
@@ -19,45 +22,94 @@ export const AuditLogDiffViewer: React.FC<AuditLogDiffViewerProps> = ({
     new Set([...Object.keys(before), ...Object.keys(after)]),
   ).sort();
 
+  const handleCopyRaw = () => {
+    const rawPayload = JSON.stringify({ beforeState, afterState }, null, 2);
+    navigator.clipboard.writeText(rawPayload);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+
   return (
-    <div className="space-y-3">
-      {/* View Mode Toggle */}
-      <div className="flex items-center justify-between border-b border-gray-200 pb-2">
-        <span className="text-xs font-semibold uppercase tracking-wider text-gray-600">
-          So Sánh Trạng Thái (Snapshot Diff)
-        </span>
-        <div className="flex items-center gap-1 bg-gray-100 p-0.5 rounded-lg border border-gray-200 text-[11px]">
+    <div className="space-y-4 rounded-lg bg-surface-container-lowest border border-[#e5e7eb] p-space-md text-xs font-body-sm shadow-sm">
+      {/* Diff Toolbar Header */}
+      <div className="flex flex-wrap items-center justify-between gap-2 border-b border-[#edeef0] pb-3">
+        <div className="flex items-center gap-2">
+          <span className="font-label-sm text-secondary uppercase tracking-wider">
+            FORENSIC DELTA VIEWER
+          </span>
+          <span className="text-secondary">•</span>
+          <span className="font-label-sm text-secondary">
+            {allKeys.length} state fields analyzed
+          </span>
+        </div>
+
+        <div className="flex items-center gap-2">
+          {/* Copy Raw Payload */}
           <button
             type="button"
-            onClick={() => setViewMode('diff')}
-            className={`flex items-center gap-1 px-2.5 py-1 rounded transition-colors cursor-pointer ${
-              viewMode === 'diff'
-                ? 'bg-white text-gray-900 font-semibold shadow-2xs'
-                : 'text-gray-500 hover:text-gray-800'
-            }`}
+            onClick={handleCopyRaw}
+            className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-surface-container hover:bg-surface-container-high border border-[#e5e7eb] font-label-sm text-on-surface transition-colors cursor-pointer"
           >
-            <Split className="h-3 w-3" />
-            Thay Đổi
+            {copied ? (
+              <>
+                <Check className="h-3 w-3 text-emerald-600" />
+                <span className="text-emerald-700">Copied</span>
+              </>
+            ) : (
+              <>
+                <Copy className="h-3 w-3" />
+                <span>Copy Raw JSON</span>
+              </>
+            )}
           </button>
-          <button
-            type="button"
-            onClick={() => setViewMode('raw')}
-            className={`flex items-center gap-1 px-2.5 py-1 rounded transition-colors cursor-pointer ${
-              viewMode === 'raw'
-                ? 'bg-white text-gray-900 font-semibold shadow-2xs'
-                : 'text-gray-500 hover:text-gray-800'
-            }`}
-          >
-            <Code2 className="h-3 w-3" />
-            JSON Gốc
-          </button>
+
+          {/* Toggle View Mode */}
+          <div className="flex items-center bg-surface-container p-0.5 rounded-lg border border-[#e5e7eb]">
+            <button
+              type="button"
+              onClick={() => setViewMode('diff')}
+              className={`flex items-center gap-1 px-2.5 py-1 rounded-lg font-label-sm transition-colors cursor-pointer ${
+                viewMode === 'diff'
+                  ? 'bg-primary text-on-primary'
+                  : 'text-secondary hover:text-on-surface'
+              }`}
+            >
+              <Split className="h-3 w-3" />
+              <span>Delta Compare</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => setViewMode('raw')}
+              className={`flex items-center gap-1 px-2.5 py-1 rounded-lg font-label-sm transition-colors cursor-pointer ${
+                viewMode === 'raw'
+                  ? 'bg-primary text-on-primary'
+                  : 'text-secondary hover:text-on-surface'
+              }`}
+            >
+              <Code2 className="h-3 w-3" />
+              <span>Raw JSON</span>
+            </button>
+          </div>
         </div>
       </div>
 
+      {/* Reason Docket Card if available */}
+      {reason && (
+        <div className="p-3 rounded-lg bg-surface-container-low border border-[#e5e7eb] text-[11px]">
+          <span className="text-secondary uppercase font-label-sm block text-[10px] mb-0.5">
+            Docket Authorization Justification:
+          </span>
+          <span className="text-on-surface font-body-sm">{reason}</span>
+        </div>
+      )}
+
+      {/* Main Diff Content */}
       {viewMode === 'diff' ? (
-        <div className="rounded-lg border border-gray-200 bg-gray-50 p-3 font-mono text-xs overflow-x-auto space-y-1.5">
+        <div className="rounded-lg border border-[#e5e7eb] bg-surface-container-low p-3 font-mono text-xs overflow-x-auto space-y-2">
           {allKeys.length === 0 ? (
-            <p className="text-gray-400 italic">Không có dữ liệu snapshot</p>
+            <p className="text-secondary italic text-[11px]">
+              No state mutations detected (payload is empty or unchanged)
+            </p>
           ) : (
             allKeys.map((key) => {
               const beforeVal = before[key];
@@ -68,17 +120,17 @@ export const AuditLogDiffViewer: React.FC<AuditLogDiffViewerProps> = ({
                 JSON.stringify(beforeVal) !== JSON.stringify(afterVal);
 
               if (!hasBefore && hasAfter) {
-                // Newly added key
+                // Newly inserted key (+)
                 return (
                   <div
                     key={key}
-                    className="flex items-start gap-2 bg-emerald-50 text-emerald-900 p-2 rounded border border-emerald-200"
+                    className="flex items-start gap-2 bg-emerald-100 border border-emerald-200 text-emerald-900 p-2.5 rounded-lg text-[11px]"
                   >
-                    <span className="font-bold select-none text-emerald-600">
+                    <span className="font-bold select-none text-emerald-700 font-mono">
                       +
                     </span>
-                    <span className="font-semibold text-gray-900">{key}:</span>
-                    <span className="break-all">
+                    <span className="font-bold text-emerald-950">{key}:</span>
+                    <span className="break-all font-mono">
                       {JSON.stringify(afterVal)}
                     </span>
                   </div>
@@ -86,17 +138,17 @@ export const AuditLogDiffViewer: React.FC<AuditLogDiffViewerProps> = ({
               }
 
               if (hasBefore && !hasAfter) {
-                // Removed key
+                // Deleted key (-)
                 return (
                   <div
                     key={key}
-                    className="flex items-start gap-2 bg-rose-50 text-rose-900 p-2 rounded border border-rose-200"
+                    className="flex items-start gap-2 bg-red-100 border border-red-200 text-red-900 p-2.5 rounded-lg text-[11px]"
                   >
-                    <span className="font-bold select-none text-rose-600">
+                    <span className="font-bold select-none text-red-700 font-mono">
                       -
                     </span>
-                    <span className="font-semibold text-gray-900">{key}:</span>
-                    <span className="line-through break-all text-rose-700">
+                    <span className="font-bold text-red-950">{key}:</span>
+                    <span className="line-through break-all font-mono text-red-800">
                       {JSON.stringify(beforeVal)}
                     </span>
                   </div>
@@ -108,21 +160,23 @@ export const AuditLogDiffViewer: React.FC<AuditLogDiffViewerProps> = ({
                 return (
                   <div
                     key={key}
-                    className="space-y-1 rounded border border-gray-200 bg-white p-2.5 shadow-2xs"
+                    className="space-y-1.5 rounded-lg border border-[#e5e7eb] bg-surface-container-lowest p-3"
                   >
-                    <div className="font-semibold text-indigo-700 text-[11px]">
-                      {key}
+                    <div className="font-bold text-on-surface font-label-sm">
+                      FIELD: {key}
                     </div>
-                    <div className="flex items-start gap-2 text-rose-700 text-[11px] bg-rose-50/50 p-1 rounded">
-                      <span className="font-bold select-none text-rose-600">
+                    {/* Before line (-) */}
+                    <div className="flex items-start gap-2 text-red-900 text-[11px] bg-red-100 border border-red-200 p-2 rounded-lg">
+                      <span className="font-bold select-none text-red-700">
                         -
                       </span>
                       <span className="line-through break-all">
                         {JSON.stringify(beforeVal)}
                       </span>
                     </div>
-                    <div className="flex items-start gap-2 text-emerald-700 text-[11px] bg-emerald-50/50 p-1 rounded">
-                      <span className="font-bold select-none text-emerald-600">
+                    {/* After line (+) */}
+                    <div className="flex items-start gap-2 text-emerald-900 text-[11px] bg-emerald-100 border border-emerald-200 p-2 rounded-lg">
+                      <span className="font-bold select-none text-emerald-700">
                         +
                       </span>
                       <span className="break-all">
@@ -137,10 +191,10 @@ export const AuditLogDiffViewer: React.FC<AuditLogDiffViewerProps> = ({
               return (
                 <div
                   key={key}
-                  className="flex items-start gap-2 text-gray-500 px-1 py-0.5 text-[11px]"
+                  className="flex items-start gap-2 text-secondary px-2 py-1 text-[11px]"
                 >
-                  <span className="text-gray-700">{key}:</span>
-                  <span className="text-gray-600 break-all">
+                  <span className="text-secondary font-medium">{key}:</span>
+                  <span className="text-on-surface break-all font-mono">
                     {JSON.stringify(afterVal)}
                   </span>
                 </div>
@@ -151,18 +205,18 @@ export const AuditLogDiffViewer: React.FC<AuditLogDiffViewerProps> = ({
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs font-mono">
           <div>
-            <div className="text-[11px] font-semibold text-gray-500 mb-1">
-              Trước Khi Thay Đổi (Before)
+            <div className="font-label-sm font-bold text-secondary uppercase mb-1">
+              Before Mutation (Prior State)
             </div>
-            <pre className="rounded-lg border border-gray-200 bg-gray-50 p-3 text-gray-800 overflow-x-auto max-h-80">
+            <pre className="rounded-lg border border-[#e5e7eb] bg-surface-container-low p-3 text-on-surface overflow-x-auto max-h-72 text-[11px]">
               {JSON.stringify(before, null, 2)}
             </pre>
           </div>
           <div>
-            <div className="text-[11px] font-semibold text-gray-500 mb-1">
-              Sau Khi Thay Đổi (After)
+            <div className="font-label-sm font-bold text-secondary uppercase mb-1">
+              After Mutation (Post State)
             </div>
-            <pre className="rounded-lg border border-gray-200 bg-gray-50 p-3 text-gray-800 overflow-x-auto max-h-80">
+            <pre className="rounded-lg border border-[#e5e7eb] bg-surface-container-low p-3 text-on-surface overflow-x-auto max-h-72 text-[11px]">
               {JSON.stringify(after, null, 2)}
             </pre>
           </div>

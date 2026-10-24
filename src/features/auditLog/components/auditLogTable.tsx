@@ -1,22 +1,28 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
+  ChevronDown,
+  ChevronUp,
+  Eye,
+  Copy,
+  Check,
   Calendar,
-  AlertCircle,
+  Globe,
   Loader2,
+  AlertCircle,
+  Shield,
   ChevronLeft,
   ChevronRight,
-  Eye,
-  Globe,
 } from 'lucide-react';
 import type { AuditLog, AuditLogPageResponse } from '../types/auditLogType';
+import { AuditLogDiffViewer } from './auditLogDiffViewer';
 
 interface AuditLogTableProps {
-  data: AuditLogPageResponse | undefined;
+  data: AuditLogPageResponse | null | undefined;
   isLoading: boolean;
   isError: boolean;
   error: Error | null;
-  onPageChange: (newPage: number) => void;
   onSelectLog: (log: AuditLog) => void;
+  onPageChange: (page: number) => void;
 }
 
 export const AuditLogTable: React.FC<AuditLogTableProps> = ({
@@ -24,15 +30,45 @@ export const AuditLogTable: React.FC<AuditLogTableProps> = ({
   isLoading,
   isError,
   error,
-  onPageChange,
   onSelectLog,
+  onPageChange,
 }) => {
-  if (isLoading) {
+  const [expandedId, setExpandedId] = useState<string | null>(null);
+  const [copiedId, setCopiedId] = useState<string | null>(null);
+
+  const toggleExpand = (id: string) => {
+    setExpandedId((prev) => (prev === id ? null : id));
+  };
+
+  const handleCopyId = (id: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    navigator.clipboard.writeText(id);
+    setCopiedId(id);
+    setTimeout(() => setCopiedId(null), 2000);
+  };
+
+  const getActionBadgeColor = (action: string) => {
+    switch (action?.toUpperCase()) {
+      case 'CREATE':
+        return 'bg-emerald-100 text-emerald-900 border-emerald-200';
+      case 'UPDATE':
+        return 'bg-surface-container text-on-surface border-outline-variant';
+      case 'DELETE':
+      case 'LOCK':
+        return 'bg-red-100 text-red-900 border-red-200';
+      case 'ROLE_CHANGE':
+        return 'bg-secondary-container text-on-secondary-container border-secondary';
+      default:
+        return 'bg-surface-container text-secondary border-[#e5e7eb]';
+    }
+  };
+
+  if (isLoading && !data) {
     return (
-      <div className="flex flex-col items-center justify-center p-12 bg-white border border-gray-200 rounded-xl shadow-2xs">
-        <Loader2 className="h-8 w-8 animate-spin text-gray-900 mb-2" />
-        <p className="text-xs text-gray-500">
-          Đang truy vấn nhật ký kiểm toán...
+      <div className="flex flex-col items-center justify-center p-16 rounded-lg bg-surface-container-lowest border border-[#e5e7eb] shadow-sm">
+        <Loader2 className="h-8 w-8 animate-spin text-secondary mb-3" />
+        <p className="text-xs font-label-sm text-secondary uppercase tracking-wider">
+          Indexing and decrypting immutable audit log stream...
         </p>
       </div>
     );
@@ -40,13 +76,13 @@ export const AuditLogTable: React.FC<AuditLogTableProps> = ({
 
   if (isError) {
     return (
-      <div className="flex flex-col items-center justify-center p-8 bg-white border border-rose-200 rounded-xl text-center shadow-2xs">
-        <AlertCircle className="h-8 w-8 text-rose-500 mb-2" />
-        <p className="text-sm font-semibold text-gray-900">
-          Không thể tải dữ liệu nhật ký
+      <div className="flex flex-col items-center justify-center p-12 rounded-lg bg-error-container border border-error text-center shadow-sm">
+        <AlertCircle className="h-8 w-8 text-error mb-3" />
+        <p className="text-sm font-semibold text-on-error-container">
+          Failed to load audit logs
         </p>
-        <p className="text-xs text-gray-500 mt-1">
-          {error?.message || 'Lỗi kết nối máy chủ'}
+        <p className="text-xs text-on-error-container/80 mt-1 font-body-sm">
+          {error?.message || 'Server connection error'}
         </p>
       </div>
     );
@@ -54,157 +90,220 @@ export const AuditLogTable: React.FC<AuditLogTableProps> = ({
 
   if (!data || data.items.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center p-12 bg-white border border-gray-200 rounded-xl text-center shadow-2xs">
-        <p className="text-sm font-semibold text-gray-800">
-          Không có bản ghi nhật ký phù hợp
+      <div className="flex flex-col items-center justify-center p-16 rounded-lg bg-surface-container-lowest border border-[#e5e7eb] text-center shadow-sm">
+        <Shield className="h-10 w-10 text-secondary mb-3" />
+        <p className="text-sm font-semibold text-on-surface">
+          No matching audit entries found
         </p>
-        <p className="text-xs text-gray-500 mt-1">
-          Hãy thử điều chỉnh bộ lọc ngày hoặc hành động kiểm toán.
+        <p className="text-xs text-secondary mt-1 font-body-sm">
+          Adjust filter criteria or date range to inspect historical events.
         </p>
       </div>
     );
   }
 
-  const getActionBadgeClass = (action: string) => {
-    switch (action.toUpperCase()) {
-      case 'CREATE':
-        return 'bg-emerald-50 text-emerald-800 border-emerald-200';
-      case 'UPDATE':
-      case 'CHANGE_ROLE':
-        return 'bg-blue-50 text-blue-800 border-blue-200';
-      case 'DELETE':
-      case 'LOCK':
-        return 'bg-rose-50 text-rose-800 border-rose-200';
-      case 'UNLOCK':
-        return 'bg-amber-50 text-amber-800 border-amber-200';
-      default:
-        return 'bg-gray-100 text-gray-800 border-gray-200';
-    }
-  };
-
   return (
     <div className="space-y-4">
-      <div className="overflow-x-auto rounded-xl border border-gray-200 bg-white shadow-2xs">
+      <div className="overflow-x-auto rounded-lg border border-[#e5e7eb] bg-surface-container-lowest shadow-sm">
         <table className="w-full text-left border-collapse text-xs">
           <thead>
-            <tr className="border-b border-gray-200 bg-gray-50 text-gray-500 font-semibold tracking-wider uppercase text-[11px]">
-              <th className="py-3.5 px-4">Thời gian</th>
-              <th className="py-3.5 px-4">Tác tử</th>
-              <th className="py-3.5 px-4">Hành động</th>
-              <th className="py-3.5 px-4">Thực thể</th>
-              <th className="py-3.5 px-4">Địa chỉ IP</th>
-              <th className="py-3.5 px-4 text-right">Chi tiết</th>
+            <tr className="bg-surface-container-high text-secondary font-label-sm uppercase tracking-wider">
+              <th className="py-3 px-space-md font-medium">Timestamp (UTC)</th>
+              <th className="py-3 px-space-md font-medium">
+                Operator Identity
+              </th>
+              <th className="py-3 px-space-md font-medium">Mutation Type</th>
+              <th className="py-3 px-space-md font-medium">
+                Target Entity & ID
+              </th>
+              <th className="py-3 px-space-md font-medium text-right">
+                Forensic Trace
+              </th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-gray-100 text-gray-700">
+          <tbody className="divide-y-0 text-on-surface">
             {data.items.map((log) => {
+              const isExpanded = expandedId === log.id;
+              const hasDiff =
+                Boolean(log.beforeState) || Boolean(log.afterState);
+
               return (
-                <tr
-                  key={log.id}
-                  onClick={() => onSelectLog(log)}
-                  className="hover:bg-gray-50/80 cursor-pointer transition-colors"
-                >
-                  {/* Timestamp */}
-                  <td className="py-3.5 px-4 text-gray-500 font-mono text-[11px]">
-                    <div className="flex items-center gap-1.5">
-                      <Calendar className="h-3 w-3 text-gray-400 shrink-0" />
-                      <span>
-                        {new Date(log.createdAt).toLocaleString('vi-VN')}
-                      </span>
-                    </div>
-                  </td>
-
-                  {/* Actor */}
-                  <td className="py-3.5 px-4">
-                    <span className="font-mono text-[11px] text-gray-700 bg-gray-100 px-2 py-0.5 rounded border border-gray-200">
-                      {log.actorId ? log.actorId.slice(0, 8) + '...' : 'System'}
-                    </span>
-                  </td>
-
-                  {/* Action Badge */}
-                  <td className="py-3.5 px-4">
-                    <span
-                      className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-semibold border ${getActionBadgeClass(
-                        log.action,
-                      )}`}
-                    >
-                      {log.action}
-                    </span>
-                  </td>
-
-                  {/* Entity Type & ID */}
-                  <td className="py-3.5 px-4">
-                    <div className="flex items-center gap-1.5">
-                      <span className="font-semibold text-gray-900">
-                        {log.entityType}
-                      </span>
-                      {log.entityId && (
-                        <span className="text-[11px] font-mono text-gray-500">
-                          #{log.entityId.slice(0, 6)}
+                <React.Fragment key={log.id}>
+                  <tr
+                    onClick={() => toggleExpand(log.id)}
+                    className={`cursor-pointer transition-colors ${
+                      isExpanded
+                        ? 'bg-surface-container-low'
+                        : 'hover:bg-surface-container-low'
+                    }`}
+                  >
+                    {/* Timestamp */}
+                    <td className="py-space-md px-space-md font-body-sm text-secondary">
+                      <div className="flex items-center gap-1.5 text-on-surface font-medium">
+                        <Calendar className="h-3.5 w-3.5 text-secondary shrink-0" />
+                        <span>
+                          {new Date(log.createdAt).toLocaleTimeString('vi-VN')}
                         </span>
-                      )}
-                    </div>
-                  </td>
+                      </div>
+                      <span className="text-[10px] text-secondary block mt-0.5 font-label-sm">
+                        {new Date(log.createdAt).toLocaleDateString('vi-VN')}
+                      </span>
+                    </td>
 
-                  {/* IP */}
-                  <td className="py-3.5 px-4 text-gray-500 font-mono text-[11px]">
-                    <div className="flex items-center gap-1">
-                      <Globe className="h-3 w-3 text-gray-400 shrink-0" />
-                      <span>{log.ip || '-'}</span>
-                    </div>
-                  </td>
+                    {/* Operator Identity */}
+                    <td className="py-space-md px-space-md">
+                      <div>
+                        <div className="flex items-center gap-2">
+                          <span className="font-semibold text-on-surface">
+                            {log.actorId
+                              ? `Staff #${log.actorId.slice(0, 8)}`
+                              : 'System'}
+                          </span>
+                          <span className="px-1.5 py-0.2 rounded text-[9px] font-label-sm uppercase bg-surface-container text-secondary">
+                            Type {log.actorType}
+                          </span>
+                        </div>
+                        {log.ip && (
+                          <div className="flex items-center gap-1 text-[10px] text-secondary font-body-sm mt-0.5">
+                            <Globe className="h-2.5 w-2.5" />
+                            <span>{log.ip}</span>
+                          </div>
+                        )}
+                      </div>
+                    </td>
 
-                  {/* Action Button */}
-                  <td className="py-3.5 px-4 text-right">
-                    <button
-                      type="button"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        onSelectLog(log);
-                      }}
-                      className="inline-flex items-center gap-1 rounded-lg border border-gray-300 bg-white px-2.5 py-1 text-[11px] font-semibold text-gray-700 hover:bg-gray-50 hover:text-gray-900 transition-colors shadow-2xs cursor-pointer"
-                    >
-                      <Eye className="h-3 w-3" />
-                      Diff
-                    </button>
-                  </td>
-                </tr>
+                    {/* Mutation Type */}
+                    <td className="py-space-md px-space-md">
+                      <span
+                        className={`inline-flex items-center px-2.5 py-1 rounded-lg text-[10px] font-label-sm uppercase tracking-wider border ${getActionBadgeColor(
+                          log.action,
+                        )}`}
+                      >
+                        {log.action}
+                      </span>
+                    </td>
+
+                    {/* Target Entity & ID */}
+                    <td className="py-space-md px-space-md">
+                      <div className="flex items-center gap-1.5 font-mono text-[11px]">
+                        <span className="text-on-surface font-bold uppercase font-label-sm">
+                          {log.entityType}
+                        </span>
+                        <span className="text-secondary">:</span>
+                        <span className="text-secondary truncate max-w-[120px] sm:max-w-[180px]">
+                          {log.entityId}
+                        </span>
+                        <button
+                          type="button"
+                          onClick={(e) => handleCopyId(log.entityId, e)}
+                          title="Copy Entity ID"
+                          className="text-secondary hover:text-on-surface cursor-pointer"
+                        >
+                          {copiedId === log.entityId ? (
+                            <Check className="h-3 w-3 text-emerald-600" />
+                          ) : (
+                            <Copy className="h-3 w-3" />
+                          )}
+                        </button>
+                      </div>
+                    </td>
+
+                    {/* Forensic Trace Toggle */}
+                    <td className="py-space-md px-space-md text-right">
+                      <div className="inline-flex items-center gap-2">
+                        {hasDiff && (
+                          <button
+                            type="button"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              toggleExpand(log.id);
+                            }}
+                            className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-[11px] font-label-sm uppercase transition-colors cursor-pointer ${
+                              isExpanded
+                                ? 'bg-primary text-on-primary'
+                                : 'bg-surface-container text-secondary hover:text-on-surface'
+                            }`}
+                          >
+                            <span>
+                              {isExpanded ? 'COLLAPSE' : 'VIEW DELTA'}
+                            </span>
+                            {isExpanded ? (
+                              <ChevronUp className="h-3 w-3" />
+                            ) : (
+                              <ChevronDown className="h-3 w-3" />
+                            )}
+                          </button>
+                        )}
+
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            onSelectLog(log);
+                          }}
+                          title="Open detailed forensic drawer"
+                          className="p-1.5 rounded-lg text-secondary hover:text-on-surface bg-surface-container hover:bg-surface-container-high transition-colors cursor-pointer"
+                        >
+                          <Eye className="h-3.5 w-3.5" />
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+
+                  {/* Inline Expanded JSON Diff Viewer Row matching Stitch Screen 10 */}
+                  {isExpanded && (
+                    <tr className="bg-surface-container-low">
+                      <td
+                        colSpan={5}
+                        className="p-4 sm:p-6 border-b border-[#e5e7eb]"
+                      >
+                        <AuditLogDiffViewer
+                          beforeState={log.beforeState}
+                          afterState={log.afterState}
+                        />
+                      </td>
+                    </tr>
+                  )}
+                </React.Fragment>
               );
             })}
           </tbody>
         </table>
-      </div>
 
-      {/* Pagination Footer */}
-      <div className="flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-gray-600 px-1">
-        <div>
-          Trang{' '}
-          <span className="font-semibold text-gray-900">{data.page + 1}</span> /{' '}
-          <span className="font-semibold text-gray-900">
-            {Math.max(1, data.totalPages)}
-          </span>{' '}
-          (Tổng cộng {data.totalElements} bản ghi kiểm toán)
-        </div>
+        {/* Pagination Footer */}
+        <div className="p-space-md bg-surface-container-low flex flex-col md:flex-row items-center justify-between gap-space-sm text-secondary font-label-sm border-t border-[#e5e7eb]">
+          <div>
+            Page{' '}
+            <span className="text-on-surface font-semibold">
+              {data.page + 1}
+            </span>{' '}
+            of{' '}
+            <span className="text-on-surface font-semibold">
+              {Math.max(1, data.totalPages)}
+            </span>{' '}
+            ({data.totalElements.toLocaleString()} total events)
+          </div>
 
-        <div className="flex items-center gap-2">
-          <button
-            type="button"
-            disabled={data.first}
-            onClick={() => onPageChange(data.page - 1)}
-            className="flex items-center gap-1 rounded-lg border border-gray-300 bg-white px-3 py-1.5 hover:bg-gray-50 hover:text-gray-900 transition-colors disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer shadow-2xs"
-          >
-            <ChevronLeft className="h-3.5 w-3.5" />
-            Trước
-          </button>
-          <button
-            type="button"
-            disabled={data.last}
-            onClick={() => onPageChange(data.page + 1)}
-            className="flex items-center gap-1 rounded-lg border border-gray-300 bg-white px-3 py-1.5 hover:bg-gray-50 hover:text-gray-900 transition-colors disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer shadow-2xs"
-          >
-            Sau
-            <ChevronRight className="h-3.5 w-3.5" />
-          </button>
+          <div className="flex items-center gap-space-xs">
+            <button
+              type="button"
+              onClick={() => onPageChange(Math.max(0, data.page - 1))}
+              disabled={data.first}
+              className="px-2.5 py-1 bg-surface-container hover:bg-surface-container-high text-on-surface rounded-lg disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer flex items-center gap-1"
+            >
+              <ChevronLeft className="h-3.5 w-3.5" />
+              <span>Prev</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => onPageChange(data.page + 1)}
+              disabled={data.last}
+              className="px-2.5 py-1 bg-surface-container hover:bg-surface-container-high text-on-surface rounded-lg disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer flex items-center gap-1"
+            >
+              <span>Next</span>
+              <ChevronRight className="h-3.5 w-3.5" />
+            </button>
+          </div>
         </div>
       </div>
     </div>
