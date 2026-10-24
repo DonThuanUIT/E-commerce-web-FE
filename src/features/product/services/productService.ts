@@ -23,7 +23,7 @@ export const productService = {
     }
 
     throw new Error(
-      response.data?.error?.message || 'Không thể tải thông tin sản phẩm',
+      response.data?.error?.message || 'Failed to load product details',
     );
   },
 };

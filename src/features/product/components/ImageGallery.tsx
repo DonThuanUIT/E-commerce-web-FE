@@ -31,7 +31,7 @@ export const ImageGallery: React.FC<ImageGalleryProps> = ({
   if (sortedImages.length === 0) {
     return (
       <div className="flex aspect-3/4 w-full items-center justify-center rounded-lg bg-neutral-100 text-neutral-400">
-        Chưa có hình ảnh cho sản phẩm này
+        No images available for this piece
       </div>
     );
   }
@@ -41,7 +41,7 @@ export const ImageGallery: React.FC<ImageGalleryProps> = ({
       {/* Top Banner & Zoom Control */}
       <div className="flex items-center justify-between text-xs tracking-wider text-neutral-500 uppercase">
         <span className="font-medium text-neutral-800">
-          Bộ sưu tập thủ công • Milan Archive
+          Atelier Artisanal Archive • Milan Edition
         </span>
         <button
           type="button"
@@ -49,7 +49,7 @@ export const ImageGallery: React.FC<ImageGalleryProps> = ({
           className="flex items-center gap-1.5 transition-colors hover:text-neutral-900"
         >
           <Maximize2 className="h-3.5 w-3.5" />
-          <span>Xem ảnh phóng to</span>
+          <span>Inspect Fullscreen</span>
         </button>
       </div>
 
@@ -59,12 +59,12 @@ export const ImageGallery: React.FC<ImageGalleryProps> = ({
           const isSelected = activeImage === img.imageUrl;
           const caption =
             index === 0
-              ? 'Fig. 01 — Toàn cảnh phom dáng'
+              ? 'Fig. 01 — Full Silhouette View'
               : index === 1
-                ? 'Fig. 02 — Chi tiết chất vải & nút'
+                ? 'Fig. 02 — Weave & Texture Detail'
                 : index === 2
-                  ? 'Fig. 03 — Góc nhìn chuyển động'
-                  : `Fig. 04 — Phía sau lưng & chiết eo`;
+                  ? 'Fig. 03 — Motion & Drape Angle'
+                  : `Fig. 04 — Posterior Cut & Tailoring Line`;
 
           return (
             <div
@@ -96,15 +96,15 @@ export const ImageGallery: React.FC<ImageGalleryProps> = ({
       <div className="flex items-center justify-between rounded-lg border border-neutral-200 bg-neutral-50 p-4">
         <div className="space-y-1">
           <h4 className="text-sm font-semibold tracking-wide text-neutral-900">
-            Chất liệu dệt may thủ công cao cấp
+            Bespoke Handcrafted Weave & Finishing
           </h4>
           <p className="text-xs text-neutral-600">
-            Từng thớ vải được xử lý dệt co giãn 4 chiều thoáng khí, đảm bảo phom
-            dáng chuẩn xác qua thời gian.
+            Each yarn is woven with breathable 4-way resilience, maintaining
+            razor-sharp silhouette integrity over time.
           </p>
         </div>
         <span className="text-xs font-medium text-neutral-900 underline underline-offset-4">
-          Chứng chỉ dệt may
+          Textile Provenance
         </span>
       </div>
 
@@ -125,7 +125,7 @@ export const ImageGallery: React.FC<ImageGalleryProps> = ({
               onClick={() => setIsZoomOpen(false)}
               className="absolute top-4 right-4 rounded-full bg-neutral-900/80 px-3 py-1 text-xs text-white"
             >
-              Đóng (ESC)
+              Close (ESC)
             </button>
           </div>
         </div>

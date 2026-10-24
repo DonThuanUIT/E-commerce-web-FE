@@ -54,11 +54,11 @@ export const ProductDetailPage: React.FC = () => {
     return (
       <div className="mx-auto flex min-h-[60vh] max-w-xl flex-col items-center justify-center px-4 text-center">
         <h2 className="text-2xl font-bold tracking-tight text-neutral-900">
-          Không tìm thấy sản phẩm
+          Product Not Found
         </h2>
         <p className="mt-2 text-sm text-neutral-500">
           {error?.message ||
-            'Sản phẩm bạn đang tìm kiếm không tồn tại hoặc đã ngừng kinh doanh.'}
+            'The piece you are looking for does not exist or has been retired from the collection.'}
         </p>
         <div className="mt-6 flex items-center gap-3">
           <button
@@ -67,14 +67,14 @@ export const ProductDetailPage: React.FC = () => {
             className="flex items-center gap-2 rounded-md border border-neutral-300 px-4 py-2 text-xs font-semibold text-neutral-800 hover:border-neutral-900"
           >
             <RefreshCw className="h-3.5 w-3.5" />
-            <span>Thử lại</span>
+            <span>Retry</span>
           </button>
           <Link
             to="/"
             className="flex items-center gap-2 rounded-md bg-neutral-900 px-4 py-2 text-xs font-semibold text-white hover:bg-neutral-800"
           >
             <ArrowLeft className="h-3.5 w-3.5" />
-            <span>Về trang chủ</span>
+            <span>Back to Home</span>
           </Link>
         </div>
       </div>
@@ -94,19 +94,19 @@ export const ProductDetailPage: React.FC = () => {
           </Link>
           <nav className="hidden space-x-8 text-xs font-medium tracking-wider text-neutral-600 uppercase md:flex">
             <span className="cursor-pointer transition-colors hover:text-neutral-900">
-              Nam
+              Men
             </span>
             <span className="cursor-pointer transition-colors hover:text-neutral-900">
-              Nữ
+              Women
             </span>
             <span className="cursor-pointer transition-colors hover:text-neutral-900">
-              Phụ kiện
+              Accessories
             </span>
             <span className="cursor-pointer transition-colors hover:text-neutral-900">
-              Bộ sưu tập mới
+              New Arrivals
             </span>
           </nav>
-          <div className="text-xs text-neutral-500">Hỗ trợ 24/7</div>
+          <div className="text-xs text-neutral-500">Concierge 24/7</div>
         </div>
       </header>
 
@@ -114,7 +114,7 @@ export const ProductDetailPage: React.FC = () => {
         {/* Breadcrumbs */}
         <nav className="mb-6 flex items-center space-x-2 text-xs text-neutral-500">
           <Link to="/" className="transition-colors hover:text-neutral-900">
-            Trang chủ
+            Home
           </Link>
           <span>/</span>
           <span className="transition-colors hover:text-neutral-900">
@@ -145,46 +145,46 @@ export const ProductDetailPage: React.FC = () => {
           <div className="flex items-center justify-between pb-6">
             <div>
               <span className="text-xs font-semibold tracking-wider text-neutral-500 uppercase">
-                Gợi ý phong cách thời trang
+                Curated Lookbook Recommendations
               </span>
               <h3 className="text-xl font-bold tracking-tight text-neutral-900">
-                Gợi ý phối đồ (Complete The Look)
+                Complete The Look
               </h3>
             </div>
             <button
               type="button"
               className="rounded-md border border-neutral-300 px-4 py-2 text-xs font-medium text-neutral-800 hover:border-neutral-900"
             >
-              Xem toàn bộ Capsule
+              Explore Full Capsule
             </button>
           </div>
 
           <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
             {[
               {
-                title: 'Quần Tây Xếp Ly Cao Cấp',
-                category: 'QUẦN ÂU',
+                title: 'Pleated Tailored Trousers',
+                category: 'TROUSERS',
                 price: '450.000 ₫',
                 image:
                   'https://images.unsplash.com/photo-1594938298603-c8148c4dae35?auto=format&fit=crop&w=500&q=80',
               },
               {
-                title: 'Giày Da Oxford Thanh Lịch',
-                category: 'GIÀY DA',
+                title: 'Classic Oxford Leather Shoes',
+                category: 'FOOTWEAR',
                 price: '890.000 ₫',
                 image:
                   'https://images.unsplash.com/photo-1614252235316-8c857d38b5f4?auto=format&fit=crop&w=500&q=80',
               },
               {
-                title: 'Túi Xách Da Công Sở Tối Giản',
-                category: 'PHỤ KIỆN',
+                title: 'Minimalist Leather Briefcase',
+                category: 'ACCESSORIES',
                 price: '650.000 ₫',
                 image:
                   'https://images.unsplash.com/photo-1548036328-c9fa89d128fa?auto=format&fit=crop&w=500&q=80',
               },
               {
-                title: 'Áo Khoác Blazer May Đo',
-                category: 'ÁO KHOÁC',
+                title: 'Bespoke Wool Blazer',
+                category: 'OUTERWEAR',
                 price: '1.200.000 ₫',
                 image:
                   'https://images.unsplash.com/photo-1507679799987-c73779587ccf?auto=format&fit=crop&w=500&q=80',
@@ -222,11 +222,11 @@ export const ProductDetailPage: React.FC = () => {
                   ATELIER AI STYLING CONCIERGE
                 </span>
                 <h4 className="text-lg font-bold text-neutral-900">
-                  Cần tư vấn về kích cỡ và phối đồ phù hợp?
+                  Require sizing advisory or styling direction?
                 </h4>
                 <p className="max-w-xl text-xs text-neutral-600">
-                  Trợ lý AI của chúng tôi sẽ phân tích số đo vóc dáng và đề xuất
-                  kích cỡ vừa vặn nhất cho từng dịp sự kiện của bạn.
+                  Our Atelier AI Concierge analyzes silhouette measurements to
+                  recommend the ideal bespoke fit for your occasion.
                 </p>
               </div>
             </div>
@@ -234,7 +234,7 @@ export const ProductDetailPage: React.FC = () => {
               type="button"
               className="rounded-md bg-neutral-900 px-5 py-3 text-xs font-semibold text-white transition-all hover:bg-neutral-800"
             >
-              Tư vấn cùng AI ngay
+              Consult AI Concierge
             </button>
           </div>
         </section>
@@ -243,11 +243,11 @@ export const ProductDetailPage: React.FC = () => {
       {/* Luxury Footer */}
       <footer className="mt-24 border-t border-neutral-200 bg-white py-12 text-xs text-neutral-500">
         <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-4 px-4 sm:flex-row sm:px-6 lg:px-8">
-          <p>© 2026 ATELIER MAISON. Bảo lưu mọi quyền.</p>
+          <p>© 2026 ATELIER MAISON. All rights reserved.</p>
           <div className="flex gap-6">
-            <span>Chính sách đổi trả</span>
-            <span>Điều khoản dịch vụ</span>
-            <span>Bảo mật dữ liệu</span>
+            <span>Return Policy</span>
+            <span>Terms of Service</span>
+            <span>Data Privacy</span>
           </div>
         </div>
       </footer>

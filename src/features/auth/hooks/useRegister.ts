@@ -76,7 +76,7 @@ export function useRegister() {
     const validationErrors = validateRegisterForm(values);
     if (Object.keys(validationErrors).length > 0) {
       setErrors(validationErrors);
-      setGeneralError('Vui lòng kiểm tra và sửa các thông tin chưa chính xác.');
+      setGeneralError('Please review and correct the invalid form entries.');
       return;
     }
 
@@ -114,18 +114,20 @@ export function useRegister() {
           err.message.toLowerCase().includes('email')
         ) {
           serverErrors.email =
-            'Email này đã tồn tại trong hệ thống. Vui lòng đăng nhập hoặc sử dụng email khác.';
+            'This email is already registered in the system. Please sign in or use another address.';
         }
 
         setErrors(serverErrors);
         setGeneralError(
           err.message ||
-            'Đăng ký tài khoản không thành công. Vui lòng thử lại.',
+            'Account registration was unsuccessful. Please try again.',
         );
       } else if (err instanceof Error) {
         setGeneralError(err.message);
       } else {
-        setGeneralError('Đã xảy ra lỗi không xác định. Vui lòng thử lại sau.');
+        setGeneralError(
+          'An unexpected error occurred. Please try again later.',
+        );
       }
     } finally {
       setIsSubmitting(false);

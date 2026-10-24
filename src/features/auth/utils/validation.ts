@@ -24,33 +24,33 @@ export function validateRegisterForm(
 
   // 1. Full name validation
   if (!values.fullName || !values.fullName.trim()) {
-    errors.fullName = 'Họ và tên không được để trống';
+    errors.fullName = 'Full name is required';
   } else if (values.fullName.trim().length < 2) {
-    errors.fullName = 'Họ và tên phải có ít nhất 2 ký tự';
+    errors.fullName = 'Full name must be at least 2 characters long';
   }
 
   // 2. Email validation
   if (!values.email || !values.email.trim()) {
-    errors.email = 'Email không được để trống';
+    errors.email = 'Email is required';
   } else if (!EMAIL_REGEX.test(values.email.trim())) {
-    errors.email = 'Email không đúng định dạng (VD: example@domain.com)';
+    errors.email = 'Invalid email format (e.g., example@domain.com)';
   }
 
   // 3. Password validation
   if (!values.password) {
-    errors.password = 'Mật khẩu không được để trống';
+    errors.password = 'Password is required';
   } else if (values.password.length < 8) {
-    errors.password = 'Mật khẩu phải có ít nhất 8 ký tự';
+    errors.password = 'Password must be at least 8 characters long';
   } else if (!PASSWORD_REGEX.test(values.password)) {
     errors.password =
-      'Mật khẩu phải chứa ít nhất 1 chữ hoa, 1 chữ thường và 1 chữ số';
+      'Password must contain at least 1 uppercase, 1 lowercase, and 1 numeric digit';
   }
 
   // 4. Confirm password validation
   if (!values.confirmPassword) {
-    errors.confirmPassword = 'Vui lòng xác nhận mật khẩu';
+    errors.confirmPassword = 'Please confirm your password';
   } else if (values.confirmPassword !== values.password) {
-    errors.confirmPassword = 'Mật khẩu xác nhận không khớp';
+    errors.confirmPassword = 'Passwords do not match';
   }
 
   return errors;

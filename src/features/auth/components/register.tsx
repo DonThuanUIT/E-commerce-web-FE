@@ -77,25 +77,24 @@ const Register: React.FC = () => {
                 </div>
                 <div>
                   <h3 className="text-base font-semibold text-emerald-900">
-                    Đăng ký tài khoản thành công!
+                    Account Registered Successfully!
                   </h3>
                   <p className="text-xs text-emerald-700">
-                    Hệ thống đã ghi nhận thông tin tài khoản của bạn.
+                    Your customer credentials have been recorded.
                   </p>
                 </div>
               </div>
 
               <div className="space-y-2 rounded-lg bg-white/80 p-4 text-xs leading-relaxed text-neutral-700 border border-emerald-100">
                 <p>
-                  Chúng tôi đã gửi email xác thực đến địa chỉ:
+                  We have dispatched a verification email to:
                   <strong className="block font-semibold text-neutral-900 mt-1">
                     {values.email}
                   </strong>
                 </p>
                 <p className="text-neutral-500">
-                  Vui lòng kiểm tra hộp thư đến (hoặc hòm thư Spam) và nhấp vào
-                  liên kết xác nhận để kích hoạt tài khoản của bạn trước khi
-                  đăng nhập.
+                  Please check your inbox (or spam folder) and click the
+                  confirmation link to activate your account before signing in.
                 </p>
               </div>
 
@@ -104,7 +103,7 @@ const Register: React.FC = () => {
                   to="/auth/login"
                   className="flex w-full items-center justify-center gap-2 rounded-lg bg-black py-3.5 px-4 text-xs font-semibold tracking-widest text-white uppercase transition hover:bg-neutral-800"
                 >
-                  <span>Đến trang Đăng nhập</span>
+                  <span>Proceed to Sign In</span>
                   <ArrowRight className="h-3.5 w-3.5" />
                 </Link>
                 <button
@@ -112,7 +111,7 @@ const Register: React.FC = () => {
                   onClick={resetForm}
                   className="w-full py-2 text-center text-xs text-neutral-500 underline underline-offset-4 transition hover:text-neutral-900 cursor-pointer"
                 >
-                  Đăng ký tài khoản khác
+                  Register another account
                 </button>
               </div>
             </div>
@@ -145,7 +144,7 @@ const Register: React.FC = () => {
                       htmlFor="fullName"
                       className="text-[11px] font-semibold tracking-wider text-neutral-700 uppercase"
                     >
-                      Họ và tên
+                      Full Name
                     </label>
                     <span className="text-[11px] text-neutral-400">
                       Required
@@ -180,7 +179,7 @@ const Register: React.FC = () => {
                       htmlFor="email"
                       className="text-[11px] font-semibold tracking-wider text-neutral-700 uppercase"
                     >
-                      Địa chỉ Email
+                      Email Address
                     </label>
                     <span className="text-[11px] text-neutral-400">
                       Required
@@ -215,7 +214,7 @@ const Register: React.FC = () => {
                       htmlFor="password"
                       className="text-[11px] font-semibold tracking-wider text-neutral-700 uppercase"
                     >
-                      Mật khẩu
+                      Password
                     </label>
                     <span className="text-[11px] text-neutral-400">
                       Min 8 chars, 1 uppercase, 1 digit
@@ -267,7 +266,7 @@ const Register: React.FC = () => {
                       htmlFor="confirmPassword"
                       className="text-[11px] font-semibold tracking-wider text-neutral-700 uppercase"
                     >
-                      Xác nhận mật khẩu
+                      Confirm Password
                     </label>
                     <span className="text-[11px] text-neutral-400">
                       Required
@@ -326,8 +325,8 @@ const Register: React.FC = () => {
                       className="mt-0.5 h-4 w-4 rounded border-neutral-300 accent-black text-black focus:ring-black"
                     />
                     <span className="text-xs text-neutral-600 leading-tight">
-                      Tôi đồng ý nhận thông báo về bộ sưu tập và dịch vụ bespoke
-                      từ Atelier.
+                      I agree to receive lookbook updates and bespoke service
+                      notifications from Atelier.
                     </span>
                   </label>
                 </div>
@@ -341,7 +340,7 @@ const Register: React.FC = () => {
                   {isSubmitting ? (
                     <>
                       <Loader2 className="h-4 w-4 animate-spin" />
-                      <span>ĐANG KHỞI TẠO TÀI KHOẢN...</span>
+                      <span>CREATING ACCOUNT...</span>
                     </>
                   ) : (
                     <>

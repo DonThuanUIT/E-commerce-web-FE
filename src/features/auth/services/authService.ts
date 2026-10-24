@@ -28,7 +28,7 @@ export const authService = {
     }
 
     throw new Error(
-      response.data?.error?.message || 'Đăng ký tài khoản không thành công',
+      response.data?.error?.message || 'Account registration failed',
     );
   },
 };
