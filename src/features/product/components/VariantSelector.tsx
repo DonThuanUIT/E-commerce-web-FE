@@ -39,7 +39,9 @@ export const VariantSelector: React.FC<VariantSelectorProps> = ({
   const colorOptions = useMemo(() => {
     const map = new Map<string, { value: string; colorHex: string | null }>();
     product.variants.forEach((v) => {
-      const colorAttr = v.attributes.find((a) => a.attributeName === 'Màu sắc');
+      const colorAttr = v.attributes.find(
+        (a) => a.attributeName === 'Màu sắc' || a.attributeName === 'Color',
+      );
       if (colorAttr && !map.has(colorAttr.value)) {
         map.set(colorAttr.value, {
           value: colorAttr.value,
@@ -53,7 +55,9 @@ export const VariantSelector: React.FC<VariantSelectorProps> = ({
   const sizeOptions = useMemo(() => {
     const set = new Set<string>();
     product.variants.forEach((v) => {
-      const sizeAttr = v.attributes.find((a) => a.attributeName === 'Kích cỡ');
+      const sizeAttr = v.attributes.find(
+        (a) => a.attributeName === 'Kích cỡ' || a.attributeName === 'Size',
+      );
       if (sizeAttr) set.add(sizeAttr.value);
     });
     return Array.from(set);
@@ -65,14 +69,16 @@ export const VariantSelector: React.FC<VariantSelectorProps> = ({
     product.variants[0];
 
   const initialColor =
-    defaultVariant?.attributes.find((a) => a.attributeName === 'Màu sắc')
-      ?.value ||
+    defaultVariant?.attributes.find(
+      (a) => a.attributeName === 'Màu sắc' || a.attributeName === 'Color',
+    )?.value ||
     colorOptions[0]?.value ||
     '';
 
   const initialSize =
-    defaultVariant?.attributes.find((a) => a.attributeName === 'Kích cỡ')
-      ?.value ||
+    defaultVariant?.attributes.find(
+      (a) => a.attributeName === 'Kích cỡ' || a.attributeName === 'Size',
+    )?.value ||
     sizeOptions[0] ||
     '';
 
@@ -85,10 +91,14 @@ export const VariantSelector: React.FC<VariantSelectorProps> = ({
   const activeVariant = useMemo(() => {
     return product.variants.find((v) => {
       const matchColor = v.attributes.some(
-        (a) => a.attributeName === 'Màu sắc' && a.value === selectedColor,
+        (a) =>
+          (a.attributeName === 'Màu sắc' || a.attributeName === 'Color') &&
+          a.value === selectedColor,
       );
       const matchSize = v.attributes.some(
-        (a) => a.attributeName === 'Kích cỡ' && a.value === selectedSize,
+        (a) =>
+          (a.attributeName === 'Kích cỡ' || a.attributeName === 'Size') &&
+          a.value === selectedSize,
       );
       return matchColor && matchSize;
     });
@@ -106,7 +116,7 @@ export const VariantSelector: React.FC<VariantSelectorProps> = ({
       onAddToCart(activeVariant, 1);
     }
     setAddFeedback(
-      `Đã thêm ${product.name} (${selectedColor} - Size ${selectedSize}) vào giỏ hàng!`,
+      `Added ${product.name} (${selectedColor} - Size ${selectedSize}) to cart!`,
     );
     setTimeout(() => setAddFeedback(null), 3000);
   };
@@ -116,9 +126,9 @@ export const VariantSelector: React.FC<VariantSelectorProps> = ({
       {/* 1. Header Information: Collection & Title */}
       <div className="space-y-2 border-b border-neutral-200 pb-5">
         <div className="flex items-center justify-between text-xs tracking-wider text-neutral-500 uppercase">
-          <span>{product.category.name} — BỘ SƯU TẬP THU ĐÔNG</span>
+          <span>{product.category.name} — AUTUMN / WINTER CAPSULE</span>
           <span className="rounded bg-neutral-100 px-2 py-0.5 text-[11px] font-mono font-medium text-neutral-700">
-            MÃ: {activeVariant?.sku || 'ATELIER-01'}
+            SKU: {activeVariant?.sku || 'ATELIER-01'}
           </span>
         </div>
 
@@ -134,12 +144,12 @@ export const VariantSelector: React.FC<VariantSelectorProps> = ({
           </div>
           <span>•</span>
           <span className="underline underline-offset-2">
-            {product.reviewCount} Đánh giá từ khách hàng
+            {product.reviewCount} Client Reviews
           </span>
           <span>•</span>
           <span className="flex items-center gap-1 text-emerald-700">
             <Sparkles className="h-3 w-3" />
-            Đã bán {product.soldCount}+
+            {product.soldCount}+ Pieces Acquired
           </span>
         </div>
 
@@ -154,7 +164,7 @@ export const VariantSelector: React.FC<VariantSelectorProps> = ({
                 {formatVND(comparePrice)}
               </span>
               <span className="rounded-full bg-rose-50 px-2.5 py-0.5 text-xs font-semibold text-rose-700">
-                Tiết kiệm {formatVND(comparePrice - currentPrice)}
+                Save {formatVND(comparePrice - currentPrice)}
               </span>
             </>
           )}
@@ -166,13 +176,13 @@ export const VariantSelector: React.FC<VariantSelectorProps> = ({
         <div className="space-y-3">
           <div className="flex items-center justify-between text-xs">
             <span className="font-semibold tracking-wider text-neutral-900 uppercase">
-              BẢNG MÀU:{' '}
+              COLORWAY:{' '}
               <span className="font-normal text-neutral-600">
                 {selectedColor}
               </span>
             </span>
             <span className="text-neutral-400">
-              {colorOptions.length} Lựa chọn
+              {colorOptions.length} Options
             </span>
           </div>
 
@@ -209,7 +219,7 @@ export const VariantSelector: React.FC<VariantSelectorProps> = ({
         <div className="space-y-3">
           <div className="flex items-center justify-between text-xs">
             <span className="font-semibold tracking-wider text-neutral-900 uppercase">
-              CHỌN KÍCH CỠ:{' '}
+              SELECT SIZE:{' '}
               <span className="font-normal text-neutral-600">
                 {selectedSize}
               </span>
@@ -219,7 +229,7 @@ export const VariantSelector: React.FC<VariantSelectorProps> = ({
               className="flex items-center gap-1 text-neutral-600 underline underline-offset-2 hover:text-neutral-900"
             >
               <Ruler className="h-3.5 w-3.5" />
-              <span>Bảng quy đổi kích cỡ</span>
+              <span>Size & Fit Guide</span>
             </button>
           </div>
 
@@ -229,10 +239,15 @@ export const VariantSelector: React.FC<VariantSelectorProps> = ({
               const variantForSize = product.variants.find((v) => {
                 const matchC = v.attributes.some(
                   (a) =>
-                    a.attributeName === 'Màu sắc' && a.value === selectedColor,
+                    (a.attributeName === 'Màu sắc' ||
+                      a.attributeName === 'Color') &&
+                    a.value === selectedColor,
                 );
                 const matchS = v.attributes.some(
-                  (a) => a.attributeName === 'Kích cỡ' && a.value === size,
+                  (a) =>
+                    (a.attributeName === 'Kích cỡ' ||
+                      a.attributeName === 'Size') &&
+                    a.value === size,
                 );
                 return matchC && matchS;
               });
@@ -250,8 +265,8 @@ export const VariantSelector: React.FC<VariantSelectorProps> = ({
                   onClick={() => setSelectedSize(size)}
                   title={
                     isSizeOutOfStock
-                      ? `Size ${size} màu ${selectedColor} hiện đã hết hàng`
-                      : `Size ${size} - Còn ${stock} sản phẩm`
+                      ? `Size ${size} in ${selectedColor} is currently out of stock`
+                      : `Size ${size} — ${stock} pieces in stock`
                   }
                   className={`relative flex flex-col items-center justify-center rounded-md border py-3 text-xs font-semibold transition-all ${
                     isSizeOutOfStock
@@ -266,14 +281,14 @@ export const VariantSelector: React.FC<VariantSelectorProps> = ({
                   {/* Out of Stock Label */}
                   {isSizeOutOfStock && (
                     <span className="text-[10px] font-normal not-italic text-rose-500">
-                      Hết hàng
+                      Sold Out
                     </span>
                   )}
 
                   {/* Low Stock Badge (Figma "2 left" equivalent) */}
                   {!isSizeOutOfStock && isLowStock && (
                     <span className="absolute -top-2 -right-1 rounded bg-amber-100 px-1.5 py-0.2 text-[9px] font-bold text-amber-800 shadow-xs">
-                      Còn {stock}
+                      Only {stock} left
                     </span>
                   )}
                 </button>
@@ -285,8 +300,8 @@ export const VariantSelector: React.FC<VariantSelectorProps> = ({
           <div className="flex items-center gap-2 rounded-md bg-neutral-50 px-3 py-2 text-xs text-neutral-600">
             <Check className="h-4 w-4 shrink-0 text-emerald-600" />
             <span>
-              <strong>Phom dáng tiêu chuẩn:</strong> Người mẫu cao 178cm mặc
-              size M chuẩn phom vừa vặn.
+              <strong>True to Size Fit:</strong> Model is 178cm wearing size M
+              with tailored silhouette.
             </span>
           </div>
         </div>
@@ -298,14 +313,15 @@ export const VariantSelector: React.FC<VariantSelectorProps> = ({
           {activeVariant.availableStock > 0 ? (
             <p className="flex items-center gap-1.5 font-medium text-emerald-700">
               <span className="h-2 w-2 rounded-full bg-emerald-500" />
-              Sẵn sàng giao hàng • Còn lại{' '}
-              <strong>{activeVariant.availableStock}</strong> sản phẩm trong kho
+              Ready for Dispatch •{' '}
+              <strong>{activeVariant.availableStock}</strong> pieces remaining in
+              atelier inventory
             </p>
           ) : (
             <p className="flex items-center gap-1.5 font-medium text-rose-600">
               <span className="h-2 w-2 rounded-full bg-rose-500" />
-              Biến thể này tạm thời hết hàng trong kho. Vui lòng chọn màu hoặc
-              kích cỡ khác.
+              This variant is currently out of stock. Please select an alternate
+              colorway or sizing.
             </p>
           )}
         </div>
@@ -327,8 +343,8 @@ export const VariantSelector: React.FC<VariantSelectorProps> = ({
             <ShoppingBag className="h-4 w-4" />
             <span>
               {isOutOfStock
-                ? 'TẠM HẾT HÀNG'
-                : `THÊM VÀO GIỎ HÀNG — ${formatVND(currentPrice)}`}
+                ? 'OUT OF STOCK'
+                : `ADD TO CART — ${formatVND(currentPrice)}`}
             </span>
           </button>
 
@@ -336,7 +352,7 @@ export const VariantSelector: React.FC<VariantSelectorProps> = ({
           <button
             type="button"
             onClick={() => setIsWishlisted(!isWishlisted)}
-            title="Lưu vào danh sách yêu thích"
+            title="Save to Wishlist"
             className={`flex h-12 w-12 items-center justify-center rounded-md border transition-all ${
               isWishlisted
                 ? 'border-rose-500 bg-rose-50 text-rose-600'
@@ -363,11 +379,11 @@ export const VariantSelector: React.FC<VariantSelectorProps> = ({
           <Truck className="h-4 w-4 shrink-0 text-neutral-900" />
           <div>
             <p className="font-semibold text-neutral-900">
-              GIAO HÀNG HỎA TỐC ĐẢM BẢO
+              EXPEDITED INSURED COURIER
             </p>
             <p className="text-neutral-600">
-              Miễn phí giao hàng toàn quốc từ 2-4 ngày làm việc kèm đồng kiểm
-              khi nhận.
+              Complimentary domestic delivery within 2-4 business days with signature
+              inspection upon delivery.
             </p>
           </div>
         </div>
@@ -376,11 +392,11 @@ export const VariantSelector: React.FC<VariantSelectorProps> = ({
           <ShieldCheck className="h-4 w-4 shrink-0 text-neutral-900" />
           <div>
             <p className="font-semibold text-neutral-900">
-              CAM KẾT BẢO HÀNH CHÍNH HÃNG
+              ATELIER GUARANTEE & SERVICE
             </p>
             <p className="text-neutral-600">
-              Đổi trả miễn phí trong 15 ngày nếu lỗi sản xuất và hỗ trợ bảo hành
-              đường may trọn đời.
+              Complimentary 15-day return window for manufacturing defects with
+              lifetime seam finishing advisory.
             </p>
           </div>
         </div>

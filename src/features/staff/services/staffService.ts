@@ -8,6 +8,7 @@ import type {
   StaffPageResponse,
   StaffQueryParams,
   StaffRole,
+  StaffStats,
 } from '../types/staffType';
 
 /**
@@ -27,7 +28,7 @@ export const staffService = {
       return response.data.data;
     }
     throw new Error(
-      response.data?.error?.message || 'Không thể tải danh sách nhân viên',
+      response.data?.error?.message || 'Failed to load staff list',
     );
   },
 
@@ -41,9 +42,7 @@ export const staffService = {
     if (response.data && response.data.success && response.data.data) {
       return response.data.data;
     }
-    throw new Error(
-      response.data?.error?.message || 'Không tìm thấy thông tin nhân viên',
-    );
+    throw new Error(response.data?.error?.message || 'Staff member not found');
   },
 
   /**
@@ -55,8 +54,21 @@ export const staffService = {
     if (response.data && response.data.success && response.data.data) {
       return response.data.data;
     }
+    throw new Error(response.data?.error?.message || 'Failed to load roles');
+  },
+
+  /**
+   * Retrieves aggregate staff statistics (total, active, locked).
+   */
+  async getStaffStats(): Promise<StaffStats> {
+    const response = await axiosInstance.get<ApiResponse<StaffStats>>(
+      '/v1/admin/staff/stats',
+    );
+    if (response.data && response.data.success && response.data.data) {
+      return response.data.data;
+    }
     throw new Error(
-      response.data?.error?.message || 'Không thể tải danh mục vai trò',
+      response.data?.error?.message || 'Failed to load staff statistics',
     );
   },
 
@@ -72,7 +84,7 @@ export const staffService = {
       return response.data.data;
     }
     throw new Error(
-      response.data?.error?.message || 'Không thể tạo nhân viên mới',
+      response.data?.error?.message || 'Failed to create new staff member',
     );
   },
 
@@ -87,7 +99,7 @@ export const staffService = {
       return;
     }
     throw new Error(
-      response.data?.error?.message || 'Không thể gửi lại email kích hoạt',
+      response.data?.error?.message || 'Failed to resend activation email',
     );
   },
 
@@ -102,7 +114,7 @@ export const staffService = {
       return response.data.data;
     }
     throw new Error(
-      response.data?.error?.message || 'Không thể khoá tài khoản nhân viên',
+      response.data?.error?.message || 'Failed to lock staff account',
     );
   },
 
@@ -117,7 +129,7 @@ export const staffService = {
       return response.data.data;
     }
     throw new Error(
-      response.data?.error?.message || 'Không thể mở khoá tài khoản nhân viên',
+      response.data?.error?.message || 'Failed to unlock staff account',
     );
   },
 
@@ -136,7 +148,7 @@ export const staffService = {
       return response.data.data;
     }
     throw new Error(
-      response.data?.error?.message || 'Không thể thay đổi vai trò nhân viên',
+      response.data?.error?.message || 'Failed to change staff role',
     );
   },
 
@@ -151,8 +163,6 @@ export const staffService = {
     if (response.data && response.data.success && response.data.data) {
       return response.data.data;
     }
-    throw new Error(
-      response.data?.error?.message || 'Thiết lập mật khẩu không thành công',
-    );
+    throw new Error(response.data?.error?.message || 'Password setup failed');
   },
 };

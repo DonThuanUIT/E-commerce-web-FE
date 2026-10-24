@@ -13,6 +13,7 @@ export const staffKeys = {
   list: (filters: StaffQueryParams) => [...staffKeys.lists(), filters] as const,
   details: () => [...staffKeys.all, 'detail'] as const,
   detail: (id: string) => [...staffKeys.details(), id] as const,
+  stats: () => [...staffKeys.all, 'stats'] as const,
   roles: ['staff-roles'] as const,
 };
 
@@ -23,6 +24,16 @@ export function useStaffList(params: StaffQueryParams = {}) {
   return useQuery({
     queryKey: staffKeys.list(params),
     queryFn: () => staffService.getStaffList(params),
+  });
+}
+
+/**
+ * Hook to query aggregate staff statistics.
+ */
+export function useStaffStats() {
+  return useQuery({
+    queryKey: staffKeys.stats(),
+    queryFn: () => staffService.getStaffStats(),
   });
 }
 
@@ -47,6 +58,7 @@ export function useCreateStaff() {
       staffService.createStaff(command),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: staffKeys.lists() });
+      queryClient.invalidateQueries({ queryKey: staffKeys.stats() });
     },
   });
 }
@@ -60,6 +72,7 @@ export function useLockStaff() {
     mutationFn: (id: string) => staffService.lockStaff(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: staffKeys.lists() });
+      queryClient.invalidateQueries({ queryKey: staffKeys.stats() });
     },
   });
 }
@@ -73,6 +86,7 @@ export function useUnlockStaff() {
     mutationFn: (id: string) => staffService.unlockStaff(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: staffKeys.lists() });
+      queryClient.invalidateQueries({ queryKey: staffKeys.stats() });
     },
   });
 }
@@ -92,6 +106,7 @@ export function useChangeStaffRole() {
     }) => staffService.changeRole(id, command),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: staffKeys.lists() });
+      queryClient.invalidateQueries({ queryKey: staffKeys.stats() });
     },
   });
 }

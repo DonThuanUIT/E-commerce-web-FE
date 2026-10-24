@@ -36,6 +36,15 @@ export interface StaffRole {
 }
 
 /**
+ * Aggregate staff statistics for admin header metrics.
+ */
+export interface StaffStats {
+  totalCount: number;
+  activeCount: number;
+  lockedCount: number;
+}
+
+/**
  * Query parameters for filtering and paginating staff list.
  */
 export interface StaffQueryParams {

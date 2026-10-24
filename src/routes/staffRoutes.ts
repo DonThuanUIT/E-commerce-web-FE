@@ -13,7 +13,7 @@ export const staffRoutes: RouteObject[] = [
     element: React.createElement(StaffAdminPage),
   },
   {
-    path: '/auth/staff/set-password',
+    path: '/set-password',
     element: React.createElement(StaffSetPasswordPage),
   },
   // Upcoming placeholder routes for full Aside navigation
