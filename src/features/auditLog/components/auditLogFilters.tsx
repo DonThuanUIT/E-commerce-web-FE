@@ -1,115 +1,155 @@
 import React from 'react';
-import { Filter, X } from 'lucide-react';
+import { Filter, X, Calendar, User } from 'lucide-react';
+import type { AuditLogQuery } from '../types/auditLogType';
 
 interface AuditLogFiltersProps {
-  entityType: string;
-  onEntityTypeChange: (val: string) => void;
-  action: string;
-  onActionChange: (val: string) => void;
-  fromDate: string;
-  onFromDateChange: (val: string) => void;
-  toDate: string;
-  onToDateChange: (val: string) => void;
+  filters: AuditLogQuery;
+  onFilterChange: (newFilters: Partial<AuditLogQuery>) => void;
   onReset: () => void;
 }
 
-const COMMON_ENTITIES = [
-  { label: 'Tất cả thực thể', value: '' },
-  { label: 'Nhân viên (STAFF)', value: 'STAFF' },
-  { label: 'Vai trò (ROLE)', value: 'ROLE' },
-  { label: 'Sản phẩm (PRODUCT)', value: 'PRODUCT' },
-  { label: 'Đơn hàng (ORDER)', value: 'ORDER' },
-  { label: 'Vận chuyển (SHIPMENT)', value: 'SHIPMENT' },
-];
-
-const COMMON_ACTIONS = [
-  { label: 'Tất cả hành động', value: '' },
-  { label: 'Tạo mới (CREATE)', value: 'CREATE' },
-  { label: 'Cập nhật (UPDATE)', value: 'UPDATE' },
-  { label: 'Khoá tài khoản (LOCK)', value: 'LOCK' },
-  { label: 'Mở khoá (UNLOCK)', value: 'UNLOCK' },
-  { label: 'Đổi vai trò (CHANGE_ROLE)', value: 'CHANGE_ROLE' },
-  { label: 'Xoá (DELETE)', value: 'DELETE' },
-];
-
 export const AuditLogFilters: React.FC<AuditLogFiltersProps> = ({
-  entityType,
-  onEntityTypeChange,
-  action,
-  onActionChange,
-  fromDate,
-  onFromDateChange,
-  toDate,
-  onToDateChange,
+  filters,
+  onFilterChange,
   onReset,
 }) => {
-  const hasActiveFilters = Boolean(entityType || action || fromDate || toDate);
+  const entityPills = [
+    { label: 'ALL ENTITIES', value: undefined },
+    { label: 'PRODUCT', value: 'PRODUCT' },
+    { label: 'STAFF', value: 'STAFF' },
+    { label: 'ORDER', value: 'ORDER' },
+    { label: 'INVENTORY', value: 'INVENTORY' },
+    { label: 'AUTH', value: 'AUTH' },
+  ];
+
+  const actions = [
+    { label: 'All Operations', value: '' },
+    { label: 'CREATE (Initial Provisioning)', value: 'CREATE' },
+    { label: 'UPDATE (State Mutation)', value: 'UPDATE' },
+    { label: 'DELETE (Record Removal)', value: 'DELETE' },
+    { label: 'LOCK (Revoke Access)', value: 'LOCK' },
+    { label: 'UNLOCK (Restore Access)', value: 'UNLOCK' },
+    { label: 'ROLE_CHANGE (Role Partitioning)', value: 'ROLE_CHANGE' },
+  ];
+
+  const hasActiveFilters = Boolean(
+    filters.entityType ||
+    filters.action ||
+    filters.actorId ||
+    filters.fromDate ||
+    filters.toDate,
+  );
 
   return (
-    <div className="flex flex-col lg:flex-row gap-3 items-stretch lg:items-center justify-between bg-white border border-gray-200 rounded-xl p-3 shadow-2xs">
-      <div className="flex flex-wrap items-center gap-2">
-        {/* Entity Type Dropdown */}
-        <div className="flex items-center gap-1.5 bg-gray-50 border border-gray-200 rounded-lg px-2.5 py-1.5">
-          <Filter className="h-3.5 w-3.5 text-gray-400" />
-          <select
-            value={entityType}
-            onChange={(e) => onEntityTypeChange(e.target.value)}
-            className="bg-transparent text-xs text-gray-700 focus:outline-none cursor-pointer"
-          >
-            {COMMON_ENTITIES.map((ent) => (
-              <option key={ent.value} value={ent.value}>
-                {ent.label}
-              </option>
-            ))}
-          </select>
-        </div>
+    <div className="rounded-lg bg-surface-container-lowest border border-[#e5e7eb] p-space-md space-y-3 shadow-sm">
+      {/* Top filter row: Dropdowns & inputs */}
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <div className="flex flex-wrap items-center gap-2.5 flex-1">
+          {/* Action Select */}
+          <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-surface-container border border-[#e5e7eb]">
+            <Filter className="h-3.5 w-3.5 text-secondary" />
+            <select
+              value={filters.action || ''}
+              onChange={(e) =>
+                onFilterChange({
+                  action: e.target.value || undefined,
+                })
+              }
+              className="bg-transparent text-xs font-body-sm text-on-surface focus:outline-none cursor-pointer"
+            >
+              {actions.map((act) => (
+                <option
+                  key={act.value}
+                  value={act.value}
+                  className="bg-surface-container-lowest text-on-surface"
+                >
+                  {act.label}
+                </option>
+              ))}
+            </select>
+          </div>
 
-        {/* Action Dropdown */}
-        <select
-          value={action}
-          onChange={(e) => onActionChange(e.target.value)}
-          className="bg-gray-50 border border-gray-200 text-xs text-gray-700 rounded-lg px-3 py-2 focus:outline-none cursor-pointer"
-        >
-          {COMMON_ACTIONS.map((act) => (
-            <option key={act.value} value={act.value}>
-              {act.label}
-            </option>
-          ))}
-        </select>
-      </div>
+          {/* Actor / Staff ID Search Input */}
+          <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-surface-container border border-[#e5e7eb] flex-1 min-w-[200px]">
+            <User className="h-3.5 w-3.5 text-secondary" />
+            <input
+              type="text"
+              value={filters.actorId || ''}
+              onChange={(e) =>
+                onFilterChange({
+                  actorId: e.target.value.trim() || undefined,
+                })
+              }
+              placeholder="Filter by Operator / Actor UUID..."
+              className="bg-transparent text-xs font-body-sm text-on-surface placeholder:text-on-surface-variant focus:outline-none w-full"
+            />
+          </div>
 
-      {/* Date Range Inputs */}
-      <div className="flex flex-wrap items-center gap-2">
-        <div className="flex items-center gap-1 text-xs text-gray-500">
-          <span>Từ:</span>
-          <input
-            type="date"
-            value={fromDate}
-            onChange={(e) => onFromDateChange(e.target.value)}
-            className="bg-gray-50 border border-gray-200 rounded-lg px-2.5 py-1.5 text-xs text-gray-800 focus:bg-white focus:outline-none focus:border-black"
-          />
-        </div>
-
-        <div className="flex items-center gap-1 text-xs text-gray-500">
-          <span>Đến:</span>
-          <input
-            type="date"
-            value={toDate}
-            onChange={(e) => onToDateChange(e.target.value)}
-            className="bg-gray-50 border border-gray-200 rounded-lg px-2.5 py-1.5 text-xs text-gray-800 focus:bg-white focus:outline-none focus:border-black"
-          />
+          {/* Date range picker trigger */}
+          <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-surface-container border border-[#e5e7eb]">
+            <Calendar className="h-3.5 w-3.5 text-secondary" />
+            <input
+              type="date"
+              value={filters.fromDate ? filters.fromDate.slice(0, 10) : ''}
+              onChange={(e) =>
+                onFilterChange({
+                  fromDate: e.target.value
+                    ? new Date(e.target.value).toISOString()
+                    : undefined,
+                })
+              }
+              className="bg-transparent text-xs font-body-sm text-on-surface focus:outline-none cursor-pointer"
+            />
+            <span className="text-secondary text-xs">→</span>
+            <input
+              type="date"
+              value={filters.toDate ? filters.toDate.slice(0, 10) : ''}
+              onChange={(e) =>
+                onFilterChange({
+                  toDate: e.target.value
+                    ? new Date(e.target.value).toISOString()
+                    : undefined,
+                })
+              }
+              className="bg-transparent text-xs font-body-sm text-on-surface focus:outline-none cursor-pointer"
+            />
+          </div>
         </div>
 
         {hasActiveFilters && (
           <button
             type="button"
             onClick={onReset}
-            className="flex items-center gap-1 px-2.5 py-2 text-xs font-medium text-gray-500 hover:text-gray-900 transition-colors cursor-pointer"
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-surface-container text-xs font-label-sm text-secondary hover:text-on-surface transition-colors cursor-pointer"
           >
             <X className="h-3.5 w-3.5" />
-            Xoá bộ lọc
+            <span>Clear Filters</span>
           </button>
         )}
+      </div>
+
+      {/* Entity Type Filter Pills matching Stitch Screen 10 */}
+      <div className="flex flex-wrap items-center gap-2 pt-2 border-t border-[#edeef0]">
+        <span className="font-label-sm uppercase text-secondary mr-1">
+          Entity Scope:
+        </span>
+        {entityPills.map((pill) => {
+          const isSelected = filters.entityType === pill.value;
+          return (
+            <button
+              key={pill.label}
+              type="button"
+              onClick={() => onFilterChange({ entityType: pill.value })}
+              className={`px-2.5 py-1 rounded-lg font-label-sm uppercase tracking-wider transition-colors cursor-pointer ${
+                isSelected
+                  ? 'bg-primary text-on-primary'
+                  : 'bg-surface-container text-secondary hover:text-on-surface'
+              }`}
+            >
+              {pill.label}
+            </button>
+          );
+        })}
       </div>
     </div>
   );

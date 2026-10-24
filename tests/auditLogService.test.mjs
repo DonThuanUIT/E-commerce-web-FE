@@ -105,7 +105,7 @@ test('auditLogService rejects on 404 with ApiRequestError', async () => {
         error: {
           status: 404,
           code: 'AUDIT_LOG_NOT_FOUND',
-          message: 'Không tìm thấy nhật ký kiểm toán với ID đã cho',
+          message: 'Audit log record not found with the provided ID',
           timestamp: '2026-10-19T12:00:00Z',
           path: '/api/v1/admin/audit-logs/unknown-id',
           fieldErrors: [],

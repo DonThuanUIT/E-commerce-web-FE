@@ -12,7 +12,7 @@ export function useProductDetail(slug: string | undefined) {
     queryKey: ['product', slug],
     queryFn: () => {
       if (!slug) {
-        throw new Error('Mã định danh sản phẩm (slug) không hợp lệ');
+        throw new Error('Invalid product identifier (slug)');
       }
       return productService.getProductBySlug(slug);
     },

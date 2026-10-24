@@ -1,27 +1,27 @@
 import React from 'react';
 import {
-  Lock,
-  Unlock,
-  ShieldAlert,
-  Send,
-  Calendar,
-  AlertCircle,
-  Loader2,
+  ShieldCheck,
   ChevronLeft,
   ChevronRight,
+  Send,
+  Lock,
+  Unlock,
+  Loader2,
+  Key,
 } from 'lucide-react';
-import type { StaffMember, StaffPageResponse } from '../types/staffType';
+import type { StaffPageResponse, StaffMember } from '../types/staffType';
 
 interface StaffTableProps {
-  data: StaffPageResponse | undefined;
+  data: StaffPageResponse | null | undefined;
   isLoading: boolean;
-  isError: boolean;
-  error: Error | null;
-  onPageChange: (newPage: number) => void;
-  onChangeRole: (staff: StaffMember) => void;
+  isError?: boolean;
+  error?: Error | null;
+  onPageChange: (page: number) => void;
   onToggleLock: (staff: StaffMember) => void;
+  onChangeRole: (staff: StaffMember) => void;
   onResendInvite: (staff: StaffMember) => void;
   resendingStaffId?: string | null;
+  currentStaffId?: string;
 }
 
 export const StaffTable: React.FC<StaffTableProps> = ({
@@ -30,29 +30,30 @@ export const StaffTable: React.FC<StaffTableProps> = ({
   isError,
   error,
   onPageChange,
-  onChangeRole,
   onToggleLock,
+  onChangeRole,
   onResendInvite,
   resendingStaffId,
+  currentStaffId,
 }) => {
-  if (isLoading) {
+  if (isError) {
     return (
-      <div className="flex flex-col items-center justify-center p-12 bg-white border border-gray-200 rounded-xl shadow-2xs">
-        <Loader2 className="h-8 w-8 animate-spin text-gray-900 mb-2" />
-        <p className="text-xs text-gray-500">Đang tải danh sách nhân viên...</p>
+      <div className="rounded-lg border border-error bg-error-container p-12 text-center shadow-sm">
+        <p className="font-headline-sm text-on-error-container">
+          Unable to load staff directory
+        </p>
+        <p className="mt-1 font-body-sm text-on-error-container/80">
+          {error?.message || 'Server connection error'}
+        </p>
       </div>
     );
   }
-
-  if (isError) {
+  if (isLoading && !data) {
     return (
-      <div className="flex flex-col items-center justify-center p-8 bg-white border border-rose-200 rounded-xl text-center shadow-2xs">
-        <AlertCircle className="h-8 w-8 text-rose-500 mb-2" />
-        <p className="text-sm font-semibold text-gray-900">
-          Không thể tải dữ liệu
-        </p>
-        <p className="text-xs text-gray-500 mt-1">
-          {error?.message || 'Lỗi kết nối máy chủ'}
+      <div className="rounded-lg border border-[#e5e7eb] bg-surface-container-lowest p-12 text-center shadow-sm">
+        <Loader2 className="mx-auto h-8 w-8 animate-spin text-secondary" />
+        <p className="mt-2 font-label-sm uppercase tracking-wider text-secondary">
+          Loading staff directory...
         </p>
       </div>
     );
@@ -60,12 +61,15 @@ export const StaffTable: React.FC<StaffTableProps> = ({
 
   if (!data || data.items.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center p-12 bg-white border border-gray-200 rounded-xl text-center shadow-2xs">
-        <p className="text-sm font-semibold text-gray-800">
-          Không tìm thấy nhân viên nào
-        </p>
-        <p className="text-xs text-gray-500 mt-1">
-          Hãy thử thay đổi điều kiện tìm kiếm hoặc bộ lọc trạng thái.
+      <div className="rounded-lg border border-[#e5e7eb] bg-surface-container-lowest p-12 text-center shadow-sm">
+        <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-lg bg-surface-container text-secondary">
+          <ShieldCheck className="h-6 w-6" />
+        </div>
+        <h3 className="mt-3 font-headline-sm text-on-surface">
+          No matching personnel found
+        </h3>
+        <p className="mt-1 font-body-sm text-secondary">
+          Try adjusting your search filters or onboarding a new operator.
         </p>
       </div>
     );
@@ -73,119 +77,159 @@ export const StaffTable: React.FC<StaffTableProps> = ({
 
   return (
     <div className="space-y-4">
-      <div className="overflow-x-auto rounded-xl border border-gray-200 bg-white shadow-2xs">
-        <table className="w-full text-left border-collapse text-xs">
+      <div className="overflow-x-auto rounded-lg border border-[#e5e7eb] bg-surface-container-lowest shadow-sm">
+        <table className="w-full text-left border-collapse">
           <thead>
-            <tr className="border-b border-gray-200 bg-gray-50 text-gray-500 font-semibold tracking-wider uppercase text-[11px]">
-              <th className="py-3.5 px-4">Nhân viên</th>
-              <th className="py-3.5 px-4">Vai trò</th>
-              <th className="py-3.5 px-4">Trạng thái</th>
-              <th className="py-3.5 px-4">Ngày tham gia</th>
-              <th className="py-3.5 px-4 text-right">Thao tác</th>
+            <tr className="bg-surface-container text-secondary font-label-sm uppercase tracking-wider">
+              <th className="py-3 px-space-md font-medium">Staff Member</th>
+              <th className="py-3 px-space-md font-medium">Internal Routing</th>
+              <th className="py-3 px-space-md font-medium">Assigned Role</th>
+              <th className="py-3 px-space-md font-medium">2FA Protocol</th>
+              <th className="py-3 px-space-md font-medium">Account Status</th>
+              <th className="py-3 px-space-md font-medium text-right">
+                Actions
+              </th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-gray-100 text-gray-700">
+          <tbody className="divide-y-0 text-on-surface">
             {data.items.map((staff) => {
               const isActive = staff.status === 1;
+              const isSelf = staff.id === currentStaffId;
               const isResending = resendingStaffId === staff.id;
+              const initials = staff.fullName
+                .split(' ')
+                .map((n) => n[0])
+                .slice(0, 2)
+                .join('')
+                .toUpperCase();
 
               return (
                 <tr
                   key={staff.id}
-                  className="hover:bg-gray-50/80 transition-colors"
+                  className="hover:bg-surface-container-low transition-colors group"
                 >
-                  {/* Staff Info */}
-                  <td className="py-3.5 px-4">
+                  {/* Staff Member */}
+                  <td className="py-space-md px-space-md">
                     <div className="flex items-center gap-3">
-                      <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-neutral-900 text-white font-bold uppercase text-xs">
-                        {staff.fullName.charAt(0)}
+                      <div className="w-9 h-9 rounded-lg bg-primary-container text-on-primary-fixed flex items-center justify-center font-headline-sm text-label-md shrink-0">
+                        {initials}
                       </div>
-                      <div>
-                        <p className="font-semibold text-gray-900">
-                          {staff.fullName}
-                        </p>
-                        <p className="text-[11px] text-gray-500 font-mono">
-                          {staff.email}
-                        </p>
+                      <div className="flex flex-col">
+                        <div className="flex items-center gap-2">
+                          <span className="font-body-md font-semibold text-on-surface">
+                            {staff.fullName}
+                          </span>
+                          {isSelf && (
+                            <span className="px-1.5 py-0.2 rounded text-[9px] font-label-sm bg-primary text-on-primary">
+                              YOU
+                            </span>
+                          )}
+                        </div>
+                        <span className="font-label-sm text-secondary">
+                          STAFF_ID #{staff.id.slice(0, 8)}
+                        </span>
                       </div>
                     </div>
                   </td>
 
-                  {/* Role Badge */}
-                  <td className="py-3.5 px-4">
-                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-gray-100 text-gray-800 border border-gray-200">
+                  {/* Internal Routing */}
+                  <td className="py-space-md px-space-md">
+                    <span className="font-body-sm text-secondary font-mono">
+                      {staff.email}
+                    </span>
+                  </td>
+
+                  {/* Assigned Role */}
+                  <td className="py-space-md px-space-md">
+                    <span className="inline-flex items-center px-2.5 py-1 rounded-lg bg-primary text-on-primary font-label-sm uppercase tracking-wider">
                       {staff.roleName || staff.roleCode}
                     </span>
                   </td>
 
-                  {/* Status Badge */}
-                  <td className="py-3.5 px-4">
+                  {/* 2FA Protocol */}
+                  <td className="py-space-md px-space-md">
+                    <span className="inline-flex items-center gap-1 font-label-sm text-on-surface">
+                      <Key className="h-3.5 w-3.5 text-on-surface" />
+                      <span>2FA Enforced</span>
+                    </span>
+                  </td>
+
+                  {/* Account Status */}
+                  <td className="py-space-md px-space-md">
                     {isActive ? (
-                      <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-medium bg-emerald-50 text-emerald-700 border border-emerald-200">
-                        <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                        Hoạt động
+                      <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-lg bg-surface-container-high text-on-surface font-label-sm uppercase">
+                        <span className="w-1.5 h-1.5 rounded-full bg-primary" />
+                        <span>Active</span>
                       </span>
                     ) : (
-                      <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-medium bg-rose-50 text-rose-700 border border-rose-200">
-                        <span className="h-1.5 w-1.5 rounded-full bg-rose-500" />
-                        Đã khoá
+                      <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-lg bg-error-container text-on-error-container font-label-sm uppercase">
+                        <span className="w-1.5 h-1.5 rounded-full bg-error" />
+                        <span>Locked</span>
                       </span>
                     )}
                   </td>
 
-                  {/* Join Date */}
-                  <td className="py-3.5 px-4 text-gray-500 font-mono text-[11px]">
-                    <div className="flex items-center gap-1.5">
-                      <Calendar className="h-3 w-3 text-gray-400" />
-                      {new Date(staff.createdAt).toLocaleDateString('vi-VN')}
-                    </div>
-                  </td>
-
                   {/* Actions */}
-                  <td className="py-3.5 px-4 text-right">
-                    <div className="inline-flex items-center gap-1">
-                      {/* Resend invite */}
+                  <td className="py-space-md px-space-md text-right">
+                    <div className="flex items-center justify-end gap-2">
+                      {/* Resend invite button */}
                       <button
                         type="button"
                         onClick={() => onResendInvite(staff)}
-                        title="Gửi lại email kích hoạt"
-                        disabled={isResending}
-                        className="p-1.5 rounded-lg text-gray-500 hover:text-gray-900 hover:bg-gray-100 transition-colors disabled:opacity-40 cursor-pointer"
+                        disabled={isResending || !isActive}
+                        title="Resend activation email"
+                        className="p-1.5 rounded-lg text-secondary hover:text-on-surface hover:bg-surface-container transition-colors disabled:opacity-30 cursor-pointer"
                       >
                         {isResending ? (
-                          <Loader2 className="h-4 w-4 animate-spin text-gray-900" />
+                          <Loader2 className="h-3.5 w-3.5 animate-spin" />
                         ) : (
-                          <Send className="h-4 w-4" />
+                          <Send className="h-3.5 w-3.5" />
                         )}
                       </button>
 
-                      {/* Change role */}
+                      {/* Change Role Button */}
                       <button
                         type="button"
                         onClick={() => onChangeRole(staff)}
-                        title="Thay đổi vai trò"
-                        className="p-1.5 rounded-lg text-gray-500 hover:text-amber-700 hover:bg-amber-50 transition-colors cursor-pointer"
+                        disabled={isSelf}
+                        title={
+                          isSelf
+                            ? 'Cannot modify own role'
+                            : 'Edit operator role'
+                        }
+                        className="px-2.5 py-1 bg-surface-container hover:bg-surface-container-high rounded-lg font-label-sm text-on-surface transition-colors disabled:opacity-40 cursor-pointer"
                       >
-                        <ShieldAlert className="h-4 w-4" />
+                        Edit Permissions
                       </button>
 
-                      {/* Lock / Unlock */}
+                      {/* Lock/Unlock Button */}
                       <button
                         type="button"
                         onClick={() => onToggleLock(staff)}
+                        disabled={isSelf}
                         title={
-                          isActive ? 'Khoá tài khoản' : 'Mở khoá tài khoản'
+                          isSelf
+                            ? 'Cannot lock own account'
+                            : isActive
+                              ? 'Lock operator account'
+                              : 'Unlock account'
                         }
-                        className={`p-1.5 rounded-lg transition-colors cursor-pointer ${
+                        className={`px-2 py-1 rounded-lg font-label-sm transition-colors cursor-pointer disabled:opacity-40 flex items-center gap-1 ${
                           isActive
-                            ? 'text-gray-500 hover:text-rose-700 hover:bg-rose-50'
-                            : 'text-gray-500 hover:text-emerald-700 hover:bg-emerald-50'
+                            ? 'bg-transparent hover:bg-error-container text-secondary hover:text-on-error-container'
+                            : 'bg-surface-container text-on-surface hover:bg-surface-container-high'
                         }`}
                       >
                         {isActive ? (
-                          <Lock className="h-4 w-4" />
+                          <>
+                            <Lock className="h-3.5 w-3.5" />
+                            <span>Revoke</span>
+                          </>
                         ) : (
-                          <Unlock className="h-4 w-4" />
+                          <>
+                            <Unlock className="h-3.5 w-3.5" />
+                            <span>Unlock</span>
+                          </>
                         )}
                       </button>
                     </div>
@@ -195,38 +239,43 @@ export const StaffTable: React.FC<StaffTableProps> = ({
             })}
           </tbody>
         </table>
-      </div>
 
-      {/* Pagination Footer */}
-      <div className="flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-gray-600 px-1">
-        <div>
-          Trang{' '}
-          <span className="font-semibold text-gray-900">{data.page + 1}</span> /{' '}
-          <span className="font-semibold text-gray-900">
-            {Math.max(1, data.totalPages)}
-          </span>{' '}
-          (Tổng cộng {data.totalElements} nhân viên)
-        </div>
+        {/* Table Footer / Telemetry */}
+        <div className="p-space-md bg-surface-container-low flex flex-col md:flex-row items-center justify-between gap-space-sm text-secondary font-label-sm border-t border-[#e5e7eb]">
+          <div className="flex items-center gap-space-md">
+            <span>
+              SHOWING {data.items.length} OF {data.totalElements} RECORDED
+              AGENTS
+            </span>
+            <span className="hidden md:inline">|</span>
+            <span className="hidden md:inline font-mono">
+              AUDIT HASH: SHA-256:d87b12e09...
+            </span>
+          </div>
 
-        <div className="flex items-center gap-2">
-          <button
-            type="button"
-            disabled={data.first}
-            onClick={() => onPageChange(data.page - 1)}
-            className="flex items-center gap-1 rounded-lg border border-gray-300 bg-white px-3 py-1.5 hover:bg-gray-50 hover:text-gray-900 transition-colors disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer shadow-2xs"
-          >
-            <ChevronLeft className="h-3.5 w-3.5" />
-            Trước
-          </button>
-          <button
-            type="button"
-            disabled={data.last}
-            onClick={() => onPageChange(data.page + 1)}
-            className="flex items-center gap-1 rounded-lg border border-gray-300 bg-white px-3 py-1.5 hover:bg-gray-50 hover:text-gray-900 transition-colors disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer shadow-2xs"
-          >
-            Sau
-            <ChevronRight className="h-3.5 w-3.5" />
-          </button>
+          <div className="flex items-center gap-space-xs">
+            <button
+              type="button"
+              onClick={() => onPageChange(Math.max(0, data.page - 1))}
+              disabled={data.first}
+              className="px-2.5 py-1 bg-surface-container hover:bg-surface-container-high text-on-surface rounded-lg disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer flex items-center gap-1"
+            >
+              <ChevronLeft className="h-3 w-3" />
+              <span>Previous</span>
+            </button>
+            <span className="px-2.5 py-1 bg-surface-container-lowest text-on-surface font-semibold rounded-lg shadow-2xs">
+              {data.page + 1} / {Math.max(1, data.totalPages)}
+            </span>
+            <button
+              type="button"
+              onClick={() => onPageChange(data.page + 1)}
+              disabled={data.last}
+              className="px-2.5 py-1 bg-surface-container hover:bg-surface-container-high text-on-surface rounded-lg disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer flex items-center gap-1"
+            >
+              <span>Next</span>
+              <ChevronRight className="h-3 w-3" />
+            </button>
+          </div>
         </div>
       </div>
     </div>

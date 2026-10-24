@@ -27,7 +27,7 @@ export const ProductAccordion: React.FC<ProductAccordionProps> = ({
           onClick={() => toggleSection('design')}
           className="flex w-full items-center justify-between py-4 text-left text-sm font-semibold tracking-wide text-neutral-900 uppercase"
         >
-          <span>Thiết kế & Kiểu dáng</span>
+          <span>Design & Silhouette</span>
           {openSection === 'design' ? (
             <ChevronUp className="h-4 w-4 text-neutral-500" />
           ) : (
@@ -39,16 +39,15 @@ export const ProductAccordion: React.FC<ProductAccordionProps> = ({
           <div className="space-y-3 pb-5 text-xs leading-relaxed text-neutral-600">
             <p>
               {product.description ||
-                'Sản phẩm được thiết kế theo tiêu chuẩn may đo cao cấp với phom dáng chuẩn mực, mang lại vẻ ngoài lịch lãm, hiện đại và trẻ trung.'}
+                'Engineered according to modern tailoring standards, combining sharp proportions with all-day comfort.'}
             </p>
             <ul className="list-inside list-disc space-y-1 text-neutral-700">
-              <li>Cổ áo và tay áo được dệt bo viền tinh xảo, chống bai dão</li>
+              <li>Ribbed collar and cuffs with shape-retention finishing</li>
               <li>
-                Đường chỉ may kép chắc chắn, đều đặn theo tiêu chuẩn xuất khẩu
+                Reinforced double-stitch seams matching export luxury standards
               </li>
               <li>
-                Phù hợp mặc đi làm, dạo phố hoặc các hoạt động thể thao nhẹ
-                nhàng
+                Versatile styling for business casual, travel, and leisure wear
               </li>
             </ul>
           </div>
@@ -62,7 +61,7 @@ export const ProductAccordion: React.FC<ProductAccordionProps> = ({
           onClick={() => toggleSection('materials')}
           className="flex w-full items-center justify-between py-4 text-left text-sm font-semibold tracking-wide text-neutral-900 uppercase"
         >
-          <span>Chất liệu & Thành phần</span>
+          <span>Materials & Composition</span>
           {openSection === 'materials' ? (
             <ChevronUp className="h-4 w-4 text-neutral-500" />
           ) : (
@@ -73,13 +72,12 @@ export const ProductAccordion: React.FC<ProductAccordionProps> = ({
         {openSection === 'materials' && (
           <div className="space-y-2 pb-5 text-xs leading-relaxed text-neutral-600">
             <p>
-              <strong>Thành phần cấu tạo:</strong>{' '}
-              {product.material || '100% Sợi cotton tự nhiên kết hợp Spandex'}
+              <strong>Fabric Composition:</strong>{' '}
+              {product.material || '100% Long-staple cotton blended with elastane'}
             </p>
             <p>
-              <strong>Hướng dẫn bảo quản:</strong> Giặt máy ở chế độ nhẹ nhàng
-              (nhiệt độ dưới 30°C). Tránh ngâm lâu với chất tẩy mạnh. Là ủi ở
-              nhiệt độ trung bình.
+              <strong>Care Instructions:</strong> Machine wash cold on delicate
+              cycle (under 30°C). Do not bleach. Cool iron if needed.
             </p>
           </div>
         )}
@@ -92,7 +90,7 @@ export const ProductAccordion: React.FC<ProductAccordionProps> = ({
           onClick={() => toggleSection('reviews')}
           className="flex w-full items-center justify-between py-4 text-left text-sm font-semibold tracking-wide text-neutral-900 uppercase"
         >
-          <span>Đánh giá từ khách hàng ({product.reviews.length})</span>
+          <span>Client Reviews ({product.reviews.length})</span>
           {openSection === 'reviews' ? (
             <ChevronUp className="h-4 w-4 text-neutral-500" />
           ) : (
@@ -104,7 +102,7 @@ export const ProductAccordion: React.FC<ProductAccordionProps> = ({
           <div className="space-y-4 pb-5">
             {product.reviews.length === 0 ? (
               <p className="text-xs text-neutral-500">
-                Chưa có đánh giá nào cho sản phẩm này.
+                No client reviews available for this piece yet.
               </p>
             ) : (
               product.reviews.map((rev) => (
@@ -124,12 +122,12 @@ export const ProductAccordion: React.FC<ProductAccordionProps> = ({
                       ))}
                     </div>
                     <span className="text-[11px] text-neutral-400">
-                      {new Date(rev.createdAt).toLocaleDateString('vi-VN')}
+                      {new Date(rev.createdAt).toLocaleDateString('en-US')}
                     </span>
                   </div>
                   <p className="text-neutral-800">{rev.comment}</p>
                   <p className="text-[10px] font-medium text-emerald-600">
-                    ✓ Đã xác thực mua hàng
+                    ✓ Verified Purchase
                   </p>
                 </div>
               ))

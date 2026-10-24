@@ -1,12 +1,11 @@
-﻿import React from 'react';
+import React from 'react';
 import {
   X,
   ShieldAlert,
   Clock,
   Globe,
-  Laptop,
   Database,
-  ArrowRight,
+  ShieldCheck,
 } from 'lucide-react';
 import type { AuditLog } from '../types/auditLogType';
 import { AuditLogDiffViewer } from './auditLogDiffViewer';
@@ -24,127 +23,116 @@ export const AuditLogDrawer: React.FC<AuditLogDrawerProps> = ({
 }) => {
   if (!isOpen || !log) return null;
 
-  const getActionColor = (action: string) => {
-    switch (action.toUpperCase()) {
-      case 'CREATE':
-        return 'bg-emerald-50 text-emerald-800 border-emerald-200';
-      case 'UPDATE':
-      case 'CHANGE_ROLE':
-        return 'bg-blue-50 text-blue-800 border-blue-200';
-      case 'DELETE':
-      case 'LOCK':
-        return 'bg-rose-50 text-rose-800 border-rose-200';
-      default:
-        return 'bg-gray-100 text-gray-800 border-gray-200';
-    }
-  };
-
   return (
-    <div className="fixed inset-0 z-50 overflow-hidden bg-black/40 backdrop-blur-xs animate-in fade-in duration-200">
-      <div className="absolute inset-0" onClick={onClose} />
-      <div className="fixed inset-y-0 right-0 flex max-w-full pl-10">
-        <div className="w-screen max-w-xl bg-white border-l border-gray-200 p-6 flex flex-col justify-between shadow-2xl animate-in slide-in-from-right duration-300 overflow-y-auto">
-          {/* Header */}
-          <div className="space-y-4">
-            <div className="flex items-center justify-between pb-4 border-b border-gray-100">
-              <div className="flex items-center gap-2.5">
-                <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-neutral-900 text-white">
-                  <ShieldAlert className="h-5 w-5" />
-                </div>
-                <div>
-                  <h2 className="text-sm font-bold text-gray-900 uppercase">
-                    Chi Tiết Nhật Ký Kiểm Toán
-                  </h2>
-                  <p className="text-[11px] font-mono text-gray-500">
-                    ID: {log.id}
-                  </p>
-                </div>
+    <div className="fixed inset-0 z-50 flex justify-end bg-neutral-900/50 backdrop-blur-sm transition-opacity">
+      <div className="w-full max-w-2xl bg-surface-container-lowest border-l border-[#e5e7eb] p-space-lg flex flex-col justify-between shadow-2xl overflow-y-auto">
+        {/* Header */}
+        <div className="space-y-6">
+          <div className="flex items-center justify-between pb-4 border-b border-[#edeef0]">
+            <div className="flex items-center gap-2.5">
+              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-surface-container border border-outline-variant text-on-surface">
+                <ShieldAlert className="h-5 w-5" />
               </div>
-              <button
-                type="button"
-                onClick={onClose}
-                className="text-gray-400 hover:text-gray-700 transition-colors cursor-pointer"
-              >
-                <X className="h-5 w-5" />
-              </button>
-            </div>
-
-            {/* Event Summary Badges */}
-            <div className="flex flex-wrap items-center gap-2 text-xs">
-              <span
-                className={`inline-flex items-center px-2.5 py-1 rounded-md font-semibold border ${getActionColor(
-                  log.action,
-                )}`}
-              >
-                {log.action}
-              </span>
-              <div className="flex items-center gap-1 text-gray-600 bg-gray-50 px-2.5 py-1 rounded-md border border-gray-200 font-mono text-[11px]">
-                <Clock className="h-3 w-3 text-gray-400" />
-                {new Date(log.createdAt).toLocaleString('vi-VN')}
-              </div>
-            </div>
-
-            {/* Metadata Card */}
-            <div className="rounded-xl border border-gray-200 bg-gray-50 p-4 space-y-3 text-xs">
-              <div className="flex items-center justify-between pb-2 border-b border-gray-200">
-                <div className="flex items-center gap-1.5 text-gray-600">
-                  <Database className="h-3.5 w-3.5 text-gray-500" />
-                  <span>Thực thể tác động:</span>
-                </div>
-                <div className="flex items-center gap-1 font-mono font-medium text-gray-900">
-                  <span className="text-indigo-700">{log.entityType}</span>
-                  <ArrowRight className="h-3 w-3 text-gray-400" />
-                  <span className="truncate max-w-[150px]">{log.entityId}</span>
-                </div>
-              </div>
-
-              <div className="flex items-center justify-between pb-2 border-b border-gray-200">
-                <div className="flex items-center gap-1.5 text-gray-600">
-                  <span>Tác tử thực hiện:</span>
-                </div>
-                <span className="font-mono text-gray-800">{log.actorId}</span>
-              </div>
-
-              <div className="flex items-center justify-between pb-2 border-b border-gray-200">
-                <div className="flex items-center gap-1.5 text-gray-600">
-                  <Globe className="h-3.5 w-3.5 text-gray-400" />
-                  <span>Địa chỉ IP:</span>
-                </div>
-                <span className="font-mono text-gray-800">
-                  {log.ip || 'N/A'}
-                </span>
-              </div>
-
               <div>
-                <div className="flex items-center gap-1.5 text-gray-600 mb-1">
-                  <Laptop className="h-3.5 w-3.5 text-gray-400" />
-                  <span>User Agent:</span>
+                <div className="font-label-sm tracking-widest text-secondary uppercase">
+                  FORENSIC EVIDENCE DOSSIER
                 </div>
-                <p className="font-mono text-[11px] text-gray-600 break-all bg-white p-2 rounded border border-gray-200">
-                  {log.userAgent || 'N/A'}
+                <h2 className="font-headline-sm text-on-surface uppercase">
+                  Audit Log Event Details
+                </h2>
+                <p className="font-body-sm text-secondary font-mono">
+                  EVENT_UUID: {log.id}
                 </p>
               </div>
             </div>
 
-            {/* Diff Viewer */}
-            <div className="pt-2">
-              <AuditLogDiffViewer
-                beforeState={log.beforeState}
-                afterState={log.afterState}
-              />
-            </div>
-          </div>
-
-          {/* Footer */}
-          <div className="pt-4 border-t border-gray-100 mt-6 flex justify-end">
             <button
               type="button"
               onClick={onClose}
-              className="rounded-lg bg-gray-100 px-4 py-2 text-xs font-semibold text-gray-700 hover:bg-gray-200 transition-colors cursor-pointer"
+              className="w-9 h-9 rounded-lg hover:bg-surface-container flex items-center justify-center text-on-surface transition-colors cursor-pointer"
             >
-              Đóng
+              <X className="h-5 w-5" />
             </button>
           </div>
+
+          {/* Quick Summary Pill Metadata */}
+          <div className="grid grid-cols-2 gap-3 text-xs font-mono">
+            <div className="p-3 rounded-lg bg-surface-container-low border border-[#e5e7eb]">
+              <div className="flex items-center gap-1.5 text-secondary text-[10px] mb-1 font-label-sm">
+                <Clock className="h-3 w-3 text-secondary" />
+                <span>TIMESTAMP (LOCAL)</span>
+              </div>
+              <div className="text-on-surface font-semibold font-body-sm">
+                {new Date(log.createdAt).toLocaleString('en-US')}
+              </div>
+            </div>
+
+            <div className="p-3 rounded-lg bg-surface-container-low border border-[#e5e7eb]">
+              <div className="flex items-center gap-1.5 text-secondary text-[10px] mb-1 font-label-sm">
+                <Globe className="h-3 w-3 text-secondary" />
+                <span>ORIGIN IP / LOCATION</span>
+              </div>
+              <div className="text-on-surface font-semibold truncate font-body-sm">
+                {log.ip || 'Internal Network'}
+              </div>
+            </div>
+          </div>
+
+          {/* Entity & Actor Information */}
+          <div className="rounded-lg bg-surface-container-low border border-[#e5e7eb] p-4 space-y-3 text-xs font-mono">
+            <div className="flex items-center justify-between border-b border-[#edeef0] pb-2 font-label-sm">
+              <span className="text-secondary uppercase">
+                Operator Identity
+              </span>
+              <span className="text-on-surface font-bold">
+                {log.actorId ? `Staff #${log.actorId.slice(0, 8)}` : 'SYSTEM'}{' '}
+                (Type {log.actorType})
+              </span>
+            </div>
+
+            <div className="flex items-center justify-between border-b border-[#edeef0] pb-2 font-label-sm">
+              <span className="text-secondary uppercase">Target Entity</span>
+              <span className="text-on-surface font-bold">
+                {log.entityType} #{log.entityId.slice(0, 8)}
+              </span>
+            </div>
+
+            <div className="flex items-center justify-between font-label-sm">
+              <span className="text-secondary uppercase">Enacted Mutation</span>
+              <span className="px-2 py-0.5 rounded-lg font-bold bg-surface-container text-on-surface border border-outline-variant">
+                {log.action}
+              </span>
+            </div>
+          </div>
+
+          {/* Snapshot Diff Section */}
+          <div className="space-y-2">
+            <div className="flex items-center gap-2 font-label-sm text-secondary uppercase tracking-wider">
+              <Database className="h-4 w-4 text-secondary" />
+              <span>State Transition Diff (Payload Comparison)</span>
+            </div>
+
+            <AuditLogDiffViewer
+              beforeState={log.beforeState}
+              afterState={log.afterState}
+            />
+          </div>
+        </div>
+
+        {/* Footer Action */}
+        <div className="pt-6 border-t border-[#edeef0] flex items-center justify-between font-label-sm">
+          <div className="flex items-center gap-1.5 text-emerald-600">
+            <ShieldCheck className="h-4 w-4" />
+            <span>Immutable Chain Recorded</span>
+          </div>
+
+          <button
+            type="button"
+            onClick={onClose}
+            className="px-4 py-2 rounded-lg bg-primary hover:bg-neutral-800 text-on-primary font-label-md uppercase tracking-wider transition-colors cursor-pointer shadow-sm"
+          >
+            Close Dossier
+          </button>
         </div>
       </div>
     </div>

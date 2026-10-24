@@ -1,10 +1,11 @@
-﻿import React from 'react';
-import { Plus, Users, ShieldCheck, UserX } from 'lucide-react';
+import React from 'react';
+import { Plus, ShieldCheck, Key, Lock } from 'lucide-react';
 
 interface StaffHeaderProps {
   totalCount: number;
   activeCount: number;
   lockedCount: number;
+  rolesCount: number;
   onOpenAddModal: () => void;
 }
 
@@ -12,55 +13,108 @@ export const StaffHeader: React.FC<StaffHeaderProps> = ({
   totalCount,
   activeCount,
   lockedCount,
+  rolesCount,
   onOpenAddModal,
 }) => {
   return (
-    <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between border-b border-gray-200 pb-5">
-      <div>
-        <div className="flex items-center gap-2 text-[10px] font-mono tracking-widest text-gray-700 uppercase mb-1">
-          <span>ATELIER // SEC-OPS_MODULE</span>
-          <span className="text-gray-700 font-bold">•</span>
-          <span className="text-gray-700 font-semibold">TIER_01 ROLES</span>
-        </div>
-        <div className="flex items-center gap-3">
-          <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-neutral-900 text-white shadow-xs">
-            <Users className="h-5 w-5" />
+    <div className="flex flex-col w-full">
+      {/* Operational Specimen Header Strip */}
+      <div className="flex flex-col md:flex-row md:items-end justify-between gap-space-md mb-space-xl pb-space-md">
+        <div className="flex flex-col">
+          <div className="flex items-center gap-space-xs mb-1">
+            <span className="font-label-sm text-secondary uppercase tracking-widest">
+              ATELIER // SEC-OPS_MODULE
+            </span>
+            <span className="w-1 h-1 rounded-full bg-secondary" />
+            <span className="font-label-sm text-secondary">TIER_01 ROLES</span>
           </div>
-          <div>
-            <h1 className="text-xl font-bold tracking-tight text-gray-900 uppercase">
-              QUẢN LÝ NHÂN VIÊN & PHÂN QUYỀN
-            </h1>
-            <p className="text-xs text-gray-500 mt-0.5">
-              Quản lý danh sách nhân sự nội bộ, cấp quyền truy cập và bảo mật
-              tài khoản quản trị
-            </p>
-          </div>
+
+          <h1 className="font-headline-lg text-on-surface tracking-tight uppercase">
+            Staff Directory & Access Control
+          </h1>
+          <p className="font-body-sm text-secondary mt-1">
+            Manage personnel identity, allocate system privileges, and monitor
+            real-time operational security posture.
+          </p>
         </div>
 
-        {/* Quick status pill counters */}
-        <div className="flex items-center gap-3 mt-3 text-xs">
-          <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-white border border-gray-200 shadow-2xs text-gray-700">
-            <span className="font-semibold text-gray-900">{totalCount}</span>{' '}
-            nhân sự
+        <div className="flex items-center gap-space-sm self-start md:self-auto">
+          <div className="bg-surface-container px-space-md py-2 rounded-lg flex items-center gap-space-xs text-on-surface">
+            <span className="font-label-sm text-secondary uppercase">
+              Total Agents:
+            </span>
+            <span className="font-label-md text-on-surface font-semibold">
+              {String(totalCount).padStart(2, '0')} RECORDED
+            </span>
           </div>
-          <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-800 text-[11px] font-medium">
-            <ShieldCheck className="h-3.5 w-3.5 text-emerald-600" />
-            <span>{activeCount} đang hoạt động</span>
-          </div>
-          <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-amber-50 border border-amber-200 text-amber-800 text-[11px] font-medium">
-            <UserX className="h-3.5 w-3.5 text-amber-600" />
-            <span>{lockedCount} đã khoá</span>
-          </div>
+
+          <button
+            type="button"
+            onClick={onOpenAddModal}
+            className="h-[42px] px-space-lg bg-primary hover:bg-neutral-800 text-on-primary font-label-md uppercase tracking-wider flex items-center gap-2 rounded-lg transition-colors shadow-sm cursor-pointer"
+          >
+            <Plus className="h-4 w-4 stroke-[2.5]" />
+            <span>+ Add New Staff</span>
+          </button>
         </div>
       </div>
 
-      <button
-        type="button"
-        onClick={onOpenAddModal}
-        className="inline-flex items-center justify-center gap-2 rounded-lg bg-black px-4 py-2.5 text-xs font-semibold tracking-wider text-white uppercase shadow-sm hover:bg-neutral-800 transition-colors cursor-pointer active:scale-[0.99]"
-      >
-        <Plus className="h-4 w-4" />+ Thêm Nhân Viên
-      </button>
+      {/* Live Dynamic Metric Badges */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-gutter mb-space-lg">
+        {/* Card 1: Active Personnel */}
+        <div className="bg-surface-container-lowest p-space-md rounded-lg shadow-sm flex flex-col justify-between border border-[#e5e7eb]">
+          <div className="flex items-center justify-between">
+            <span className="font-label-sm text-secondary uppercase">
+              Active Personnel
+            </span>
+            <ShieldCheck className="h-[18px] w-[18px] text-emerald-600" />
+          </div>
+          <div className="mt-space-md flex items-baseline justify-between">
+            <span className="font-headline-md text-on-surface">
+              {activeCount}
+            </span>
+            <span className="font-label-sm text-secondary">
+              OF {totalCount} REGISTERED
+            </span>
+          </div>
+        </div>
+
+        {/* Card 2: Locked Accounts */}
+        <div className="bg-surface-container-lowest p-space-md rounded-lg shadow-sm flex flex-col justify-between border border-[#e5e7eb]">
+          <div className="flex items-center justify-between">
+            <span className="font-label-sm text-secondary uppercase">
+              Locked Accounts
+            </span>
+            <Lock className="h-[18px] w-[18px] text-error" />
+          </div>
+          <div className="mt-space-md flex items-baseline justify-between">
+            <span className="font-headline-md text-on-surface">
+              {lockedCount}
+            </span>
+            <span className="font-label-sm text-secondary uppercase">
+              {lockedCount > 0 ? 'ACCESS REVOKED' : 'ALL CLEAR'}
+            </span>
+          </div>
+        </div>
+
+        {/* Card 3: Dynamic Role Partitioning */}
+        <div className="bg-surface-container-lowest p-space-md rounded-lg shadow-sm flex flex-col justify-between border border-[#e5e7eb]">
+          <div className="flex items-center justify-between">
+            <span className="font-label-sm text-secondary uppercase">
+              Role Partitioning
+            </span>
+            <Key className="h-[18px] w-[18px] text-secondary" />
+          </div>
+          <div className="mt-space-md flex items-baseline justify-between">
+            <span className="font-headline-md text-on-surface">
+              {rolesCount} {rolesCount === 1 ? 'Role' : 'Roles'}
+            </span>
+            <span className="font-label-sm text-secondary uppercase">
+              SYSTEM TIERS
+            </span>
+          </div>
+        </div>
+      </div>
     </div>
   );
 };

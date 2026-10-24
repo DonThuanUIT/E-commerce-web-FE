@@ -31,4 +31,5 @@ export interface AuditLogQueryParams {
   size?: number;
 }
 
+export type AuditLogQuery = AuditLogQueryParams;
 export type AuditLogPageResponse = PageResponse<AuditLog>;

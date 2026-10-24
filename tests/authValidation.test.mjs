@@ -82,10 +82,10 @@ test('validateRegisterForm flags missing required fields', () => {
 
   const errors = validateRegisterForm(emptyValues);
 
-  assert.equal(errors.fullName, 'Họ và tên không được để trống');
-  assert.equal(errors.email, 'Email không được để trống');
-  assert.equal(errors.password, 'Mật khẩu không được để trống');
-  assert.equal(errors.confirmPassword, 'Vui lòng xác nhận mật khẩu');
+  assert.equal(errors.fullName, 'Full name is required');
+  assert.equal(errors.email, 'Email is required');
+  assert.equal(errors.password, 'Password is required');
+  assert.equal(errors.confirmPassword, 'Please confirm your password');
 });
 
 test('validateRegisterForm flags password mismatch', () => {
@@ -102,7 +102,7 @@ test('validateRegisterForm flags password mismatch', () => {
   assert.equal(errors.fullName, undefined);
   assert.equal(errors.email, undefined);
   assert.equal(errors.password, undefined);
-  assert.equal(errors.confirmPassword, 'Mật khẩu xác nhận không khớp');
+  assert.equal(errors.confirmPassword, 'Passwords do not match');
 });
 
 test('validateRegisterForm accepts valid inputs', () => {

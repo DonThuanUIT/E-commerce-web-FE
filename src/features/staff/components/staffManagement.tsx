@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import {
   useStaffList,
+  useStaffStats,
   useStaffRoles,
   useCreateStaff,
   useLockStaff,
@@ -11,7 +12,7 @@ import {
 import { StaffHeader } from './staffHeader';
 import { StaffFilters } from './staffFilters';
 import { StaffTable } from './staffTable';
-import { AddStaffModal } from './addStaffModal';
+import { StaffDrawer } from './staffDrawer';
 import { ChangeRoleModal } from './changeRoleModal';
 import { LockStaffModal } from './lockStaffModal';
 import type { StaffMember, CreateStaffCommand } from '../types/staffType';
@@ -23,7 +24,7 @@ export const StaffManagement: React.FC = () => {
   const [page, setPage] = useState(0);
   const pageSize = 20;
 
-  const [isAddOpen, setIsAddOpen] = useState(false);
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [selectedStaffForRole, setSelectedStaffForRole] =
     useState<StaffMember | null>(null);
   const [selectedStaffForLock, setSelectedStaffForLock] =
@@ -90,27 +91,36 @@ export const StaffManagement: React.FC = () => {
     try {
       setResendingStaffId(staff.id);
       await resendInviteMutation.mutateAsync(staff.id);
-      alert(`Đã gửi lại email kích hoạt cho ${staff.email}`);
+      alert(`Activation email resent to ${staff.email}`);
     } catch (err) {
-      alert(err instanceof Error ? err.message : 'Gửi lại thư mời thất bại');
+      alert(
+        err instanceof Error
+          ? err.message
+          : 'Failed to resend invitation email',
+      );
     } finally {
       setResendingStaffId(null);
     }
   };
 
-  const totalCount = data?.totalElements || 0;
-  const activeCount = data?.items.filter((i) => i.status === 1).length || 0;
-  const lockedCount = data?.items.filter((i) => i.status === 2).length || 0;
+  const { data: stats } = useStaffStats();
+
+  const totalCount = stats?.totalCount ?? (data?.totalElements || 0);
+  const activeCount = stats?.activeCount ?? 0;
+  const lockedCount = stats?.lockedCount ?? 0;
 
   return (
     <div className="p-4 sm:p-8 space-y-6 max-w-7xl mx-auto">
+      {/* Stitch Screen 9 Staff Header with Bento Metric Cards */}
       <StaffHeader
         totalCount={totalCount}
         activeCount={activeCount}
         lockedCount={lockedCount}
-        onOpenAddModal={() => setIsAddOpen(true)}
+        rolesCount={roles.length}
+        onOpenAddModal={() => setIsDrawerOpen(true)}
       />
 
+      {/* Stitch Screen 9 Filters & Search */}
       <StaffFilters
         keyword={keyword}
         onKeywordChange={handleKeywordChange}
@@ -122,6 +132,7 @@ export const StaffManagement: React.FC = () => {
         onReset={handleResetFilters}
       />
 
+      {/* Stitch Screen 9 Staff Table */}
       <StaffTable
         data={data}
         isLoading={isLoading}
@@ -134,14 +145,16 @@ export const StaffManagement: React.FC = () => {
         resendingStaffId={resendingStaffId}
       />
 
-      <AddStaffModal
-        isOpen={isAddOpen}
-        onClose={() => setIsAddOpen(false)}
+      {/* Stitch Screen 9 Slide-out Drawer */}
+      <StaffDrawer
+        isOpen={isDrawerOpen}
+        onClose={() => setIsDrawerOpen(false)}
         onSubmit={handleCreateStaff}
         roles={roles}
         isLoading={createMutation.isPending}
       />
 
+      {/* Change Role Modal */}
       <ChangeRoleModal
         staff={selectedStaffForRole}
         isOpen={Boolean(selectedStaffForRole)}
@@ -151,6 +164,7 @@ export const StaffManagement: React.FC = () => {
         isLoading={changeRoleMutation.isPending}
       />
 
+      {/* Lock/Unlock Modal */}
       <LockStaffModal
         staff={selectedStaffForLock}
         isOpen={Boolean(selectedStaffForLock)}

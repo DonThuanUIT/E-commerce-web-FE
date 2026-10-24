@@ -1,0 +1,2860 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "CNWeb API",
+    "description": "API documentation for the CNWeb backend, including user registration, user lookup, and paginated user listings.",
+    "contact": {
+      "name": "CNWeb API Support",
+      "email": "nguyenvubaduy@gmail.com"
+    },
+    "version": "0.0.1-SNAPSHOT"
+  },
+  "servers": [
+    { "url": "http://localhost:8080", "description": "Generated server url" }
+  ],
+  "tags": [
+    {
+      "name": "Authentication",
+      "description": "Customer authentication and account registration APIs"
+    },
+    {
+      "name": "Customer Addresses",
+      "description": "Customer delivery address management APIs (US-04)"
+    },
+    {
+      "name": "Shipment Tracking",
+      "description": "Public shipment tracking timeline lookup APIs (US-36)"
+    },
+    {
+      "name": "Admin - Audit Logs",
+      "description": "Administrative audit logs query APIs (US-42)"
+    },
+    {
+      "name": "Admin Products",
+      "description": "Admin product write APIs for staff with product:write authority"
+    },
+    {
+      "name": "Admin - Shipping Carriers",
+      "description": "Administrative shipping carriers management APIs (US-36)"
+    },
+    {
+      "name": "Admin - Staff",
+      "description": "Administrative staff management APIs (US-39)"
+    },
+    {
+      "name": "Products",
+      "description": "Public Product Catalog APIs for guests and customers (US-09)"
+    },
+    {
+      "name": "Customer Measurements",
+      "description": "Customer body measurements and size recommendations APIs (US-10)"
+    },
+    {
+      "name": "Categories",
+      "description": "Public category navigation APIs for storefront"
+    },
+    {
+      "name": "Admin - Roles",
+      "description": "Role lookup APIs for staff administration (US-39)"
+    },
+    {
+      "name": "Admin - Shipments",
+      "description": "Administrative shipment creation and dispatch APIs (US-36)"
+    },
+    {
+      "name": "Customers",
+      "description": "Customer profile lookup and management APIs"
+    },
+    {
+      "name": "Authentication - Staff",
+      "description": "Staff authentication and password setup APIs (US-39)"
+    },
+    {
+      "name": "Admin - Categories",
+      "description": "Administrative category management APIs (US-30)"
+    }
+  ],
+  "paths": {
+    "/api/v1/customer-measurements": {
+      "get": {
+        "tags": ["Customer Measurements"],
+        "summary": "Get current customer body measurements",
+        "description": "Returns saved body measurements (height, weight, chest, waist, hip) for the authenticated customer.",
+        "operationId": "getMeasurements",
+        "parameters": [
+          {
+            "name": "X-Customer-Id",
+            "in": "header",
+            "description": "Customer ID header for testing/pre-JWT development (optional)",
+            "required": false,
+            "schema": { "type": "string", "format": "uuid" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseCustomerMeasurement"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": ["Customer Measurements"],
+        "summary": "Save or update customer body measurements",
+        "description": "Creates or updates body measurements for the authenticated customer.",
+        "operationId": "upsertMeasurements",
+        "parameters": [
+          {
+            "name": "X-Customer-Id",
+            "in": "header",
+            "description": "Customer ID header for testing/pre-JWT development (optional)",
+            "required": false,
+            "schema": { "type": "string", "format": "uuid" }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpsertCustomerMeasurementCommand"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseCustomerMeasurement"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/customer-addresses/{id}": {
+      "get": {
+        "tags": ["Customer Addresses"],
+        "summary": "Get delivery address by ID",
+        "description": "Returns the address matching the given ID. Returns 404 if the address does not exist or belongs to another customer.",
+        "operationId": "getAddress",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string", "format": "uuid" }
+          },
+          {
+            "name": "X-Customer-Id",
+            "in": "header",
+            "required": false,
+            "schema": { "type": "string", "format": "uuid" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseCustomerAddress"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": ["Customer Addresses"],
+        "summary": "Update delivery address",
+        "description": "Updates an existing delivery address by ID.",
+        "operationId": "updateAddress",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string", "format": "uuid" }
+          },
+          {
+            "name": "X-Customer-Id",
+            "in": "header",
+            "required": false,
+            "schema": { "type": "string", "format": "uuid" }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateCustomerAddressCommand"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseCustomerAddress"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": ["Customer Addresses"],
+        "summary": "Delete delivery address",
+        "description": "Deletes a delivery address. If deleting the default address and other addresses exist, another address is promoted to default. Rejects deletion if it is the only default address.",
+        "operationId": "deleteAddress",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string", "format": "uuid" }
+          },
+          {
+            "name": "X-Customer-Id",
+            "in": "header",
+            "required": false,
+            "schema": { "type": "string", "format": "uuid" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": { "$ref": "#/components/schemas/ApiResponseVoid" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/admin/categories/{id}": {
+      "get": {
+        "tags": ["Admin - Categories"],
+        "summary": "Get category details by ID",
+        "description": "Returns detailed profile of a single category.",
+        "operationId": "getCategoryById",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string", "format": "uuid" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseCategoryAdminResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": ["Admin - Categories"],
+        "summary": "Update category",
+        "description": "Updates category details. Prevents circular references in category hierarchy.",
+        "operationId": "updateCategory",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string", "format": "uuid" }
+          },
+          {
+            "name": "X-Staff-Id",
+            "in": "header",
+            "description": "Staff ID header for testing/pre-JWT development (optional)",
+            "required": false,
+            "schema": { "type": "string", "format": "uuid" }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/UpdateCategoryCommand" }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseCategoryAdminResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": ["Admin - Categories"],
+        "summary": "Soft delete category",
+        "description": "Soft deletes a category. Rejects deletion if it has subcategories or active products.",
+        "operationId": "deleteCategory",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string", "format": "uuid" }
+          },
+          {
+            "name": "X-Staff-Id",
+            "in": "header",
+            "description": "Staff ID header for testing/pre-JWT development (optional)",
+            "required": false,
+            "schema": { "type": "string", "format": "uuid" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": { "$ref": "#/components/schemas/ApiResponseVoid" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/users": {
+      "get": {
+        "tags": ["Customers"],
+        "summary": "List customers",
+        "description": "Returns a paginated list of customers.",
+        "operationId": "findAll",
+        "parameters": [
+          {
+            "name": "pageable",
+            "in": "query",
+            "required": true,
+            "schema": { "$ref": "#/components/schemas/Pageable" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponsePageResponseCustomer"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": ["Customers"],
+        "summary": "Register a customer",
+        "description": "Registers a customer with a valid email address and display name.",
+        "operationId": "register",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RegisterCustomerCommand"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": { "$ref": "#/components/schemas/ApiResponseCustomer" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/customers": {
+      "get": {
+        "tags": ["Customers"],
+        "summary": "List customers",
+        "description": "Returns a paginated list of customers.",
+        "operationId": "findAll_1",
+        "parameters": [
+          {
+            "name": "pageable",
+            "in": "query",
+            "required": true,
+            "schema": { "$ref": "#/components/schemas/Pageable" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponsePageResponseCustomer"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": ["Customers"],
+        "summary": "Register a customer",
+        "description": "Registers a customer with a valid email address and display name.",
+        "operationId": "register_1",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RegisterCustomerCommand"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": { "$ref": "#/components/schemas/ApiResponseCustomer" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/customer-measurements/recommendations/{productId}/calculate": {
+      "post": {
+        "tags": ["Customer Measurements"],
+        "summary": "Calculate size recommendation with custom measurements",
+        "description": "Allows guest users or authenticated users to try custom body measurements on a product size chart.",
+        "operationId": "calculateSizeWithCustomMeasurements",
+        "parameters": [
+          {
+            "name": "productId",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string", "format": "uuid" }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpsertCustomerMeasurementCommand"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseSizeRecommendationResult"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/customer-addresses": {
+      "get": {
+        "tags": ["Customer Addresses"],
+        "summary": "List delivery addresses",
+        "description": "Returns all delivery addresses for the authenticated customer, with the default address listed first.",
+        "operationId": "getAddresses",
+        "parameters": [
+          {
+            "name": "X-Customer-Id",
+            "in": "header",
+            "description": "Customer ID header for testing/pre-JWT development (optional)",
+            "required": false,
+            "schema": { "type": "string", "format": "uuid" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseListCustomerAddress"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": ["Customer Addresses"],
+        "summary": "Create delivery address",
+        "description": "Creates a new delivery address. Automatically sets as default if it is the first address or explicitly marked as default.",
+        "operationId": "createAddress",
+        "parameters": [
+          {
+            "name": "X-Customer-Id",
+            "in": "header",
+            "required": false,
+            "schema": { "type": "string", "format": "uuid" }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateCustomerAddressCommand"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseCustomerAddress"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/auth/staff/set-password": {
+      "post": {
+        "tags": ["Authentication - Staff"],
+        "summary": "Set initial password for staff account",
+        "description": "Consumes a valid password setup token sent via email and configures initial account password.",
+        "operationId": "setPassword",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SetStaffPasswordCommand"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": { "$ref": "#/components/schemas/ApiResponseString" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/auth/register": {
+      "post": {
+        "tags": ["Authentication"],
+        "summary": "Register a new customer account",
+        "description": "Registers a new customer account with an email, strong password, and full name. The email address must not be in use by another active account.",
+        "operationId": "register_2",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RegisterCustomerCommand"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": { "$ref": "#/components/schemas/ApiResponseCustomer" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/auth/login": {
+      "post": {
+        "tags": ["Authentication"],
+        "summary": "Log in with email and password",
+        "description": "Authenticates an ACTIVE, email-verified customer and returns an access token (JWT) and a refresh token. Each login opens a new session, so several devices can be signed in at once. Send the optional X-Guest-Cart-Token header to have the guest cart merged. After 5 failed attempts per IP and email within 15 minutes the API answers 429 with Retry-After.",
+        "operationId": "login",
+        "parameters": [
+          {
+            "name": "X-Guest-Cart-Token",
+            "in": "header",
+            "required": false,
+            "schema": { "type": "string" }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/LoginCommand" }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Logged in; tokens returned",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseAuthTokens"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "VALIDATION_ERROR: malformed email or missing password",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseAuthTokens"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "INVALID_CREDENTIALS: wrong email or password",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseAuthTokens"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "ACCOUNT_NOT_ACTIVE or EMAIL_NOT_VERIFIED (only after a correct password)",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseAuthTokens"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "TOO_MANY_LOGIN_ATTEMPTS: see the Retry-After header",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseAuthTokens"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/admin/staff": {
+      "get": {
+        "tags": ["Admin - Staff"],
+        "summary": "List staff members",
+        "description": "Returns paginated staff members matching optional keyword, status, and role filters.",
+        "operationId": "findAll_2",
+        "parameters": [
+          {
+            "name": "keyword",
+            "in": "query",
+            "required": false,
+            "schema": { "type": "string" }
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "required": false,
+            "schema": { "type": "integer", "format": "int32" }
+          },
+          {
+            "name": "roleId",
+            "in": "query",
+            "required": false,
+            "schema": { "type": "string", "format": "uuid" }
+          },
+          {
+            "name": "pageable",
+            "in": "query",
+            "required": true,
+            "schema": { "$ref": "#/components/schemas/Pageable" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponsePageResponseStaffMember"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": ["Admin - Staff"],
+        "summary": "Onboard a new staff member",
+        "description": "Creates a new staff member and dispatches an initial password setup invitation email.",
+        "operationId": "create",
+        "parameters": [
+          {
+            "name": "X-Staff-Id",
+            "in": "header",
+            "description": "Admin ID header for pre-JWT development",
+            "required": false,
+            "schema": { "type": "string", "format": "uuid" }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/CreateStaffCommand" }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseStaffMember"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/admin/staff/{id}/resend-invitation": {
+      "post": {
+        "tags": ["Admin - Staff"],
+        "summary": "Resend password setup email",
+        "description": "Regenerates setup token and resends invitation email to the staff member.",
+        "operationId": "resendInvitation",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string", "format": "uuid" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": { "$ref": "#/components/schemas/ApiResponseVoid" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/admin/products": {
+      "post": {
+        "tags": ["Admin Products"],
+        "summary": "Create a draft product",
+        "description": "Creates a new DRAFT product (status=2) with variants, gallery images, and an optional\nsize chart reference. Inventory is initialised to zero for every variant.\nSlugs and SKUs must be globally unique across all products, including deleted ones.\nThe referenced category and size chart (if supplied) must already exist.\nRequired authority: product:write.\n",
+        "operationId": "createProduct",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/CreateProductCommand" }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseProductAdminDetail"
+                }
+              }
+            }
+          }
+        },
+        "x-request-example": "docs/api/examples/product-create-request.json",
+        "x-response-example": "docs/api/examples/product-create-response.json"
+      }
+    },
+    "/api/v1/admin/products/{id}/publish": {
+      "post": {
+        "tags": ["Admin Products"],
+        "summary": "Publish a draft product",
+        "description": "Transitions a DRAFT product (status=2) to ACTIVE (status=1). The product must exist,\nnot be deleted, and have at least one active variant. No request body is required.\nRequired authority: product:write.\n",
+        "operationId": "publishProduct",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string", "format": "uuid" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseProductAdminDetail"
+                }
+              }
+            }
+          }
+        },
+        "x-response-example": "docs/api/examples/product-publish-response.json"
+      }
+    },
+    "/api/v1/admin/orders/{orderId}/shipments": {
+      "get": {
+        "tags": ["Admin - Shipments"],
+        "summary": "Get shipment by order ID",
+        "description": "Returns current shipment details for an order.",
+        "operationId": "getShipmentByOrderId",
+        "parameters": [
+          {
+            "name": "orderId",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string", "format": "uuid" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": { "$ref": "#/components/schemas/ApiResponseShipment" }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": ["Admin - Shipments"],
+        "summary": "Create shipment and dispatch to carrier",
+        "description": "Creates a shipment for an order in PACKING status, assigns tracking code, and triggers dispatch transition.",
+        "operationId": "createShipment",
+        "parameters": [
+          {
+            "name": "orderId",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string", "format": "uuid" }
+          },
+          {
+            "name": "X-Staff-Id",
+            "in": "header",
+            "description": "Staff ID header for pre-JWT development",
+            "required": false,
+            "schema": { "type": "string", "format": "uuid" }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/CreateShipmentCommand" }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": { "$ref": "#/components/schemas/ApiResponseShipment" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/admin/categories": {
+      "post": {
+        "tags": ["Admin - Categories"],
+        "summary": "Create category or subcategory",
+        "description": "Creates a category. When parentId is provided, creates it as a child category under that parent (US-30).",
+        "operationId": "createCategory",
+        "parameters": [
+          {
+            "name": "X-Staff-Id",
+            "in": "header",
+            "description": "Staff ID header for testing/pre-JWT development (optional)",
+            "required": false,
+            "schema": { "type": "string", "format": "uuid" }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/CreateCategoryCommand" }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseCategoryAdminResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/customer-addresses/{id}/default": {
+      "patch": {
+        "tags": ["Customer Addresses"],
+        "summary": "Set default delivery address",
+        "description": "Marks the specified address as default and unsets the previous default address.",
+        "operationId": "setDefaultAddress",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string", "format": "uuid" }
+          },
+          {
+            "name": "X-Customer-Id",
+            "in": "header",
+            "required": false,
+            "schema": { "type": "string", "format": "uuid" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseCustomerAddress"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/admin/staff/{id}/unlock": {
+      "patch": {
+        "tags": ["Admin - Staff"],
+        "summary": "Unlock staff account",
+        "description": "Unlocks a previously locked staff member account.",
+        "operationId": "unlockStaff",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string", "format": "uuid" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseStaffMember"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/admin/staff/{id}/role": {
+      "patch": {
+        "tags": ["Admin - Staff"],
+        "summary": "Change staff role",
+        "description": "Updates the assigned role for a staff member. Prevents demoting the last active admin.",
+        "operationId": "changeRole",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string", "format": "uuid" }
+          },
+          {
+            "name": "X-Staff-Id",
+            "in": "header",
+            "required": false,
+            "schema": { "type": "string", "format": "uuid" }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ChangeStaffRoleCommand"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseStaffMember"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/admin/staff/{id}/lock": {
+      "patch": {
+        "tags": ["Admin - Staff"],
+        "summary": "Lock staff account",
+        "description": "Locks a staff member account and revokes active authentication sessions. Prevents locking own account or the last active admin.",
+        "operationId": "lockStaff",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string", "format": "uuid" }
+          },
+          {
+            "name": "X-Staff-Id",
+            "in": "header",
+            "required": false,
+            "schema": { "type": "string", "format": "uuid" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseStaffMember"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/admin/categories/{id}/status": {
+      "patch": {
+        "tags": ["Admin - Categories"],
+        "summary": "Toggle category visibility status",
+        "description": "Activates or hides a category from customers on storefront.",
+        "operationId": "toggleStatus",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string", "format": "uuid" }
+          },
+          {
+            "name": "isActive",
+            "in": "query",
+            "required": true,
+            "schema": { "type": "boolean" }
+          },
+          {
+            "name": "X-Staff-Id",
+            "in": "header",
+            "description": "Staff ID header for testing/pre-JWT development (optional)",
+            "required": false,
+            "schema": { "type": "string", "format": "uuid" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseCategoryAdminResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/admin/categories/reorder": {
+      "patch": {
+        "tags": ["Admin - Categories"],
+        "summary": "Batch reorder categories",
+        "description": "Updates display sort order for multiple categories in a single transaction.",
+        "operationId": "reorderCategories",
+        "parameters": [
+          {
+            "name": "X-Staff-Id",
+            "in": "header",
+            "description": "Staff ID header for testing/pre-JWT development (optional)",
+            "required": false,
+            "schema": { "type": "string", "format": "uuid" }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ReorderCategoriesCommand"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": { "$ref": "#/components/schemas/ApiResponseVoid" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/shipments/track/{trackingCode}": {
+      "get": {
+        "tags": ["Shipment Tracking"],
+        "summary": "Track shipment by tracking code",
+        "description": "Returns real-time shipment status and milestone history for the given carrier tracking code.",
+        "operationId": "trackShipment",
+        "parameters": [
+          {
+            "name": "trackingCode",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseShipmentTrackingTimeline"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/products/{slug}": {
+      "get": {
+        "tags": ["Products"],
+        "summary": "Get product detail by slug",
+        "description": "Returns the product details, gallery images, variants with available inventory stock, and visible reviews. Accessible to guests without authentication.",
+        "operationId": "getProductDetailBySlug",
+        "parameters": [
+          {
+            "name": "slug",
+            "in": "path",
+            "description": "Product URL slug (e.g. ao-polo-the-thao-nam-phoi-vien)",
+            "required": true,
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseProductDetail"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/customers/{id}": {
+      "get": {
+        "tags": ["Customers"],
+        "summary": "Get a customer by ID",
+        "description": "Returns the customer matching the given UUID. Returns HTTP 404 if the customer does not exist.",
+        "operationId": "findById",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string", "format": "uuid" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": { "$ref": "#/components/schemas/ApiResponseCustomer" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/users/{id}": {
+      "get": {
+        "tags": ["Customers"],
+        "summary": "Get a customer by ID",
+        "description": "Returns the customer matching the given UUID. Returns HTTP 404 if the customer does not exist.",
+        "operationId": "findById_1",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string", "format": "uuid" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": { "$ref": "#/components/schemas/ApiResponseCustomer" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/customer-measurements/recommendations/{productId}": {
+      "get": {
+        "tags": ["Customer Measurements"],
+        "summary": "Get size recommendation based on saved measurements",
+        "description": "Matches customer's saved body measurements against the product's size chart to provide the best fitting size.",
+        "operationId": "recommendSize",
+        "parameters": [
+          {
+            "name": "X-Customer-Id",
+            "in": "header",
+            "description": "Customer ID header for testing/pre-JWT development (optional)",
+            "required": false,
+            "schema": { "type": "string", "format": "uuid" }
+          },
+          {
+            "name": "productId",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string", "format": "uuid" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseSizeRecommendationResult"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/categories/{slug}": {
+      "get": {
+        "tags": ["Categories"],
+        "summary": "Get category details by slug",
+        "description": "Returns category information and active direct subcategories by unique slug.",
+        "operationId": "getPublicCategoryBySlug",
+        "parameters": [
+          {
+            "name": "slug",
+            "in": "path",
+            "description": "Category URL slug (e.g. ao-nam)",
+            "required": true,
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseCategoryTreeResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/categories/tree": {
+      "get": {
+        "tags": ["Categories"],
+        "summary": "Get category navigation tree",
+        "description": "Returns active hierarchical category tree sorted by sortOrder for header menu and catalog browsing.",
+        "operationId": "getPublicCategoryTree",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseListCategoryTreeResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/auth/verify-email": {
+      "get": {
+        "tags": ["Authentication"],
+        "summary": "Xác thực tài khoản qua link email",
+        "description": "Kích hoạt tài khoản người dùng bằng mã token xác thực được gửi qua email.",
+        "operationId": "verifyEmail",
+        "parameters": [
+          {
+            "name": "token",
+            "in": "query",
+            "required": true,
+            "schema": { "type": "string", "minLength": 1 }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Xác thực email thành công",
+            "content": {
+              "*/*": {
+                "schema": { "$ref": "#/components/schemas/ApiResponseString" }
+              }
+            }
+          },
+          "400": {
+            "description": "Token không hợp lệ hoặc đã hết hạn",
+            "content": {
+              "*/*": {
+                "schema": { "$ref": "#/components/schemas/ApiResponseString" }
+              }
+            }
+          },
+          "409": {
+            "description": "Token đã qua sử dụng hoặc email đã được xác thực",
+            "content": {
+              "*/*": {
+                "schema": { "$ref": "#/components/schemas/ApiResponseString" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/admin/staff/{id}": {
+      "get": {
+        "tags": ["Admin - Staff"],
+        "summary": "Get staff member details by ID",
+        "description": "Returns detailed profile of a staff member excluding sensitive credentials.",
+        "operationId": "findById_2",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string", "format": "uuid" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseStaffMember"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/admin/staff/stats": {
+      "get": {
+        "tags": ["Admin - Staff"],
+        "summary": "Get staff statistics",
+        "description": "Returns aggregate counts of staff accounts: total, active, and locked.",
+        "operationId": "getStats",
+        "parameters": [
+          {
+            "name": "X-Staff-Id",
+            "in": "header",
+            "description": "Admin ID header for pre-JWT development",
+            "required": false,
+            "schema": { "type": "string", "format": "uuid" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseStaffStats"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/admin/shipping-carriers": {
+      "get": {
+        "tags": ["Admin - Shipping Carriers"],
+        "summary": "Get list of shipping carriers",
+        "description": "Returns active shipping carriers (GHN, GHTK, Viettel Post, SPX) for dispatching.",
+        "operationId": "getActiveCarriers",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseListShippingCarrier"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/admin/roles": {
+      "get": {
+        "tags": ["Admin - Roles"],
+        "summary": "List staff roles",
+        "description": "Returns all available staff roles for assignment dropdowns.",
+        "operationId": "getRoles",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseListStaffRole"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/admin/categories/tree": {
+      "get": {
+        "tags": ["Admin - Categories"],
+        "summary": "Get full category tree for admin",
+        "description": "Returns complete hierarchical category tree including inactive categories.",
+        "operationId": "getAdminCategoryTree",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseListCategoryTreeResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/admin/audit-logs": {
+      "get": {
+        "tags": ["Admin - Audit Logs"],
+        "summary": "List audit logs",
+        "description": "Returns paginated audit log entries matching optional filters (staff ID, entity type, entity ID, action, date range).",
+        "operationId": "findAuditLogs",
+        "parameters": [
+          {
+            "name": "actorId",
+            "in": "query",
+            "required": false,
+            "schema": { "type": "string", "format": "uuid" }
+          },
+          {
+            "name": "entityType",
+            "in": "query",
+            "required": false,
+            "schema": { "type": "string" }
+          },
+          {
+            "name": "entityId",
+            "in": "query",
+            "required": false,
+            "schema": { "type": "string", "format": "uuid" }
+          },
+          {
+            "name": "action",
+            "in": "query",
+            "required": false,
+            "schema": { "type": "string" }
+          },
+          {
+            "name": "fromDate",
+            "in": "query",
+            "required": false,
+            "schema": { "type": "string", "format": "date-time" }
+          },
+          {
+            "name": "toDate",
+            "in": "query",
+            "required": false,
+            "schema": { "type": "string", "format": "date-time" }
+          },
+          {
+            "name": "pageable",
+            "in": "query",
+            "required": true,
+            "schema": { "$ref": "#/components/schemas/Pageable" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponsePageResponseAuditLog"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/admin/audit-logs/{id}": {
+      "get": {
+        "tags": ["Admin - Audit Logs"],
+        "summary": "Get audit log details by ID",
+        "description": "Returns detailed audit entry including before/after snapshot states in JSON.",
+        "operationId": "getAuditLogById",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string", "format": "uuid" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": { "$ref": "#/components/schemas/ApiResponseAuditLog" }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "UpsertCustomerMeasurementCommand": {
+        "type": "object",
+        "properties": {
+          "heightCm": {
+            "type": "integer",
+            "format": "int32",
+            "description": "Height in centimeters",
+            "example": 172,
+            "maximum": 250,
+            "minimum": 100
+          },
+          "weightKg": {
+            "type": "integer",
+            "format": "int32",
+            "description": "Weight in kilograms",
+            "example": 65,
+            "maximum": 200,
+            "minimum": 30
+          },
+          "chest": {
+            "type": "integer",
+            "format": "int32",
+            "description": "Bust/Chest measurement in centimeters",
+            "example": 92,
+            "maximum": 150,
+            "minimum": 50
+          },
+          "waist": {
+            "type": "integer",
+            "format": "int32",
+            "description": "Waist measurement in centimeters",
+            "example": 76,
+            "maximum": 150,
+            "minimum": 40
+          },
+          "hip": {
+            "type": "integer",
+            "format": "int32",
+            "description": "Hip measurement in centimeters",
+            "example": 95,
+            "maximum": 150,
+            "minimum": 50
+          }
+        }
+      },
+      "ApiError": {
+        "type": "object",
+        "properties": {
+          "status": { "type": "integer", "format": "int32" },
+          "code": { "type": "string" },
+          "message": { "type": "string" },
+          "timestamp": { "type": "string", "format": "date-time" },
+          "path": { "type": "string" },
+          "fieldErrors": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/FieldViolation" }
+          }
+        }
+      },
+      "ApiResponseCustomerMeasurement": {
+        "type": "object",
+        "properties": {
+          "success": { "type": "boolean" },
+          "data": { "$ref": "#/components/schemas/CustomerMeasurement" },
+          "error": { "$ref": "#/components/schemas/ApiError" }
+        }
+      },
+      "CustomerMeasurement": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string", "format": "uuid" },
+          "customerId": { "type": "string", "format": "uuid" },
+          "heightCm": { "type": "integer", "format": "int32" },
+          "weightKg": { "type": "integer", "format": "int32" },
+          "chest": { "type": "integer", "format": "int32" },
+          "waist": { "type": "integer", "format": "int32" },
+          "hip": { "type": "integer", "format": "int32" },
+          "createdAt": { "type": "string", "format": "date-time" },
+          "updatedAt": { "type": "string", "format": "date-time" }
+        }
+      },
+      "FieldViolation": {
+        "type": "object",
+        "properties": {
+          "field": { "type": "string" },
+          "message": { "type": "string" }
+        }
+      },
+      "UpdateCustomerAddressCommand": {
+        "type": "object",
+        "properties": {
+          "recipientName": {
+            "type": "string",
+            "description": "Recipient full name",
+            "example": "John Doe",
+            "maxLength": 255,
+            "minLength": 0
+          },
+          "phone": {
+            "type": "string",
+            "description": "Recipient phone number",
+            "example": "0912345678",
+            "minLength": 1,
+            "pattern": "^(0|\\+84)[0-9]{9,10}$"
+          },
+          "province": {
+            "type": "string",
+            "description": "Province or City",
+            "example": "Ho Chi Minh City",
+            "maxLength": 255,
+            "minLength": 0
+          },
+          "district": {
+            "type": "string",
+            "description": "District",
+            "example": "Thu Duc",
+            "maxLength": 255,
+            "minLength": 0
+          },
+          "ward": {
+            "type": "string",
+            "description": "Ward",
+            "example": "Linh Trung",
+            "maxLength": 255,
+            "minLength": 0
+          },
+          "addressLine": {
+            "type": "string",
+            "description": "Detailed street address",
+            "example": "1 Vo Van Ngan Street",
+            "minLength": 1
+          },
+          "isDefault": {
+            "type": "boolean",
+            "description": "Set as default address",
+            "example": false
+          }
+        },
+        "required": [
+          "addressLine",
+          "district",
+          "phone",
+          "province",
+          "recipientName",
+          "ward"
+        ]
+      },
+      "ApiResponseCustomerAddress": {
+        "type": "object",
+        "properties": {
+          "success": { "type": "boolean" },
+          "data": { "$ref": "#/components/schemas/CustomerAddress" },
+          "error": { "$ref": "#/components/schemas/ApiError" }
+        }
+      },
+      "CustomerAddress": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string", "format": "uuid" },
+          "customerId": { "type": "string", "format": "uuid" },
+          "recipientName": { "type": "string" },
+          "phone": { "type": "string" },
+          "province": { "type": "string" },
+          "district": { "type": "string" },
+          "ward": { "type": "string" },
+          "addressLine": { "type": "string" },
+          "isDefault": { "type": "boolean" },
+          "createdAt": { "type": "string", "format": "date-time" },
+          "updatedAt": { "type": "string", "format": "date-time" }
+        }
+      },
+      "UpdateCategoryCommand": {
+        "type": "object",
+        "description": "Request body for updating a category",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Name of the category",
+            "example": "Áo Polo Nam Cao Cấp",
+            "maxLength": 255,
+            "minLength": 0
+          },
+          "slug": {
+            "type": "string",
+            "description": "URL slug (optional, auto-generated from name if omitted)",
+            "example": "ao-polo-nam-cao-cap"
+          },
+          "parentId": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Parent category ID (null for top-level root categories)",
+            "example": "a0000000-0000-0000-0000-000000000001"
+          },
+          "imageUrl": {
+            "type": "string",
+            "description": "Banner or thumbnail image URL",
+            "example": "https://example.com/images/polo-premium.jpg"
+          },
+          "sortOrder": {
+            "type": "integer",
+            "format": "int32",
+            "description": "Display sort order (ascending)",
+            "example": 10,
+            "minimum": 0
+          },
+          "isActive": {
+            "type": "boolean",
+            "description": "Whether the category is active and visible",
+            "example": true
+          }
+        },
+        "required": ["name"]
+      },
+      "ApiResponseCategoryAdminResponse": {
+        "type": "object",
+        "properties": {
+          "success": { "type": "boolean" },
+          "data": { "$ref": "#/components/schemas/CategoryAdminResponse" },
+          "error": { "$ref": "#/components/schemas/ApiError" }
+        }
+      },
+      "CategoryAdminResponse": {
+        "type": "object",
+        "description": "Detailed category information for administration",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Category ID"
+          },
+          "parentId": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Parent category ID if any"
+          },
+          "parentName": {
+            "type": "string",
+            "description": "Parent category name if any"
+          },
+          "name": { "type": "string", "description": "Category display name" },
+          "slug": { "type": "string", "description": "Unique URL slug" },
+          "imageUrl": {
+            "type": "string",
+            "description": "Banner or icon image URL"
+          },
+          "sortOrder": {
+            "type": "integer",
+            "format": "int32",
+            "description": "Display sort order"
+          },
+          "isActive": {
+            "type": "boolean",
+            "description": "Whether the category is active and visible to customers"
+          },
+          "childrenCount": {
+            "type": "integer",
+            "format": "int64",
+            "description": "Number of direct subcategories"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Creation timestamp"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Last update timestamp"
+          }
+        }
+      },
+      "RegisterCustomerCommand": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "format": "email",
+            "description": "Customer email address",
+            "example": "customer@example.com",
+            "minLength": 1
+          },
+          "password": {
+            "type": "string",
+            "description": "Password (min 8 chars, uppercase, lowercase, digit)",
+            "example": "Password123",
+            "maxLength": 2147483647,
+            "minLength": 8,
+            "pattern": "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d).+$"
+          },
+          "fullName": {
+            "type": "string",
+            "description": "Customer full name",
+            "example": "Nguyen Van A",
+            "minLength": 1
+          }
+        },
+        "required": ["email", "fullName", "password"]
+      },
+      "ApiResponseCustomer": {
+        "type": "object",
+        "properties": {
+          "success": { "type": "boolean" },
+          "data": { "$ref": "#/components/schemas/Customer" },
+          "error": { "$ref": "#/components/schemas/ApiError" }
+        }
+      },
+      "Customer": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Customer unique identifier"
+          },
+          "email": {
+            "type": "string",
+            "description": "Customer email address",
+            "example": "customer@example.com"
+          },
+          "fullName": {
+            "type": "string",
+            "description": "Customer full name",
+            "example": "Nguyen Van A"
+          },
+          "status": {
+            "type": "string",
+            "description": "Account status code (1 = ACTIVE)",
+            "example": "1"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Account creation timestamp"
+          }
+        }
+      },
+      "ApiResponseSizeRecommendationResult": {
+        "type": "object",
+        "properties": {
+          "success": { "type": "boolean" },
+          "data": { "$ref": "#/components/schemas/SizeRecommendationResult" },
+          "error": { "$ref": "#/components/schemas/ApiError" }
+        }
+      },
+      "SizeRecommendationResult": {
+        "type": "object",
+        "properties": {
+          "productId": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Product ID",
+            "example": "9b1deb4d-3b7d-4bad-9bdd-2b0d7b3dcb6d"
+          },
+          "recommendedSize": {
+            "type": "string",
+            "description": "Recommended apparel size code",
+            "example": "M"
+          },
+          "fitSummary": {
+            "type": "string",
+            "description": "Overall fit recommendation summary",
+            "example": "Phù hợp hoàn hảo với số đo của bạn"
+          },
+          "chestFit": {
+            "type": "string",
+            "description": "Fit assessment for chest",
+            "example": "PERFECT"
+          },
+          "waistFit": {
+            "type": "string",
+            "description": "Fit assessment for waist",
+            "example": "PERFECT"
+          },
+          "hipFit": {
+            "type": "string",
+            "description": "Fit assessment for hip",
+            "example": "PERFECT"
+          },
+          "advice": {
+            "type": "string",
+            "description": "Additional fitting advice",
+            "example": "Khi phân vân giữa 2 kích cỡ, chúng tôi khuyên bạn nên chọn cỡ lớn hơn."
+          }
+        }
+      },
+      "CreateCustomerAddressCommand": {
+        "type": "object",
+        "properties": {
+          "recipientName": {
+            "type": "string",
+            "description": "Recipient full name",
+            "example": "John Doe",
+            "maxLength": 255,
+            "minLength": 0
+          },
+          "phone": {
+            "type": "string",
+            "description": "Recipient phone number",
+            "example": "0912345678",
+            "minLength": 1,
+            "pattern": "^(0|\\+84)[0-9]{9,10}$"
+          },
+          "province": {
+            "type": "string",
+            "description": "Province or City",
+            "example": "Ho Chi Minh City",
+            "maxLength": 255,
+            "minLength": 0
+          },
+          "district": {
+            "type": "string",
+            "description": "District",
+            "example": "Thu Duc",
+            "maxLength": 255,
+            "minLength": 0
+          },
+          "ward": {
+            "type": "string",
+            "description": "Ward",
+            "example": "Linh Trung",
+            "maxLength": 255,
+            "minLength": 0
+          },
+          "addressLine": {
+            "type": "string",
+            "description": "Detailed street address",
+            "example": "1 Vo Van Ngan Street",
+            "minLength": 1
+          },
+          "isDefault": {
+            "type": "boolean",
+            "description": "Set as default address",
+            "example": true
+          }
+        },
+        "required": [
+          "addressLine",
+          "district",
+          "phone",
+          "province",
+          "recipientName",
+          "ward"
+        ]
+      },
+      "SetStaffPasswordCommand": {
+        "type": "object",
+        "properties": {
+          "token": {
+            "type": "string",
+            "description": "Password setup token from email",
+            "example": "aB3_...URLSafeToken",
+            "minLength": 1
+          },
+          "newPassword": {
+            "type": "string",
+            "description": "New password (min 8 chars, uppercase, lowercase, number)",
+            "example": "SecurePassword123",
+            "maxLength": 2147483647,
+            "minLength": 8,
+            "pattern": "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d).+$"
+          }
+        },
+        "required": ["newPassword", "token"]
+      },
+      "ApiResponseString": {
+        "type": "object",
+        "properties": {
+          "success": { "type": "boolean" },
+          "data": { "type": "string" },
+          "error": { "$ref": "#/components/schemas/ApiError" }
+        }
+      },
+      "LoginCommand": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "format": "email",
+            "description": "Registered email address",
+            "example": "customer@example.com",
+            "minLength": 1
+          },
+          "password": {
+            "type": "string",
+            "description": "Account password",
+            "example": "Password123",
+            "minLength": 1
+          }
+        },
+        "required": ["email", "password"]
+      },
+      "ApiResponseAuthTokens": {
+        "type": "object",
+        "properties": {
+          "success": { "type": "boolean" },
+          "data": { "$ref": "#/components/schemas/AuthTokens" },
+          "error": { "$ref": "#/components/schemas/ApiError" }
+        }
+      },
+      "AuthTokens": {
+        "type": "object",
+        "properties": {
+          "accessToken": {
+            "type": "string",
+            "description": "JWT access token (HS256)"
+          },
+          "refreshToken": {
+            "type": "string",
+            "description": "Opaque refresh token; only its SHA-256 hash is stored server-side"
+          },
+          "tokenType": {
+            "type": "string",
+            "description": "Token type for the Authorization header",
+            "example": "Bearer"
+          },
+          "expiresIn": {
+            "type": "integer",
+            "format": "int64",
+            "description": "Access token lifetime in seconds",
+            "example": 900
+          },
+          "customer": {
+            "$ref": "#/components/schemas/Customer",
+            "description": "The authenticated customer"
+          }
+        }
+      },
+      "CreateStaffCommand": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "format": "email",
+            "description": "Corporate email address",
+            "example": "staff@shop.com",
+            "minLength": 1
+          },
+          "fullName": {
+            "type": "string",
+            "description": "Staff full name",
+            "example": "Nguyen Van B",
+            "maxLength": 255,
+            "minLength": 0
+          },
+          "roleId": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Assigned role ID"
+          }
+        },
+        "required": ["email", "fullName", "roleId"]
+      },
+      "ApiResponseStaffMember": {
+        "type": "object",
+        "properties": {
+          "success": { "type": "boolean" },
+          "data": { "$ref": "#/components/schemas/StaffMember" },
+          "error": { "$ref": "#/components/schemas/ApiError" }
+        }
+      },
+      "StaffMember": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Staff unique identifier"
+          },
+          "email": {
+            "type": "string",
+            "description": "Staff corporate email address",
+            "example": "staff@shop.com"
+          },
+          "fullName": {
+            "type": "string",
+            "description": "Staff full name",
+            "example": "Nguyen Van B"
+          },
+          "roleId": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Assigned role ID"
+          },
+          "roleCode": {
+            "type": "string",
+            "description": "Assigned role code",
+            "example": "STAFF"
+          },
+          "roleName": {
+            "type": "string",
+            "description": "Assigned role name",
+            "example": "Nhân viên vận hành"
+          },
+          "status": {
+            "type": "integer",
+            "format": "int32",
+            "description": "Account status code (1 = ACTIVE, 2 = LOCKED)",
+            "example": 1
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Account creation timestamp"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Last update timestamp"
+          }
+        }
+      },
+      "ApiResponseVoid": {
+        "type": "object",
+        "properties": {
+          "success": { "type": "boolean" },
+          "data": {},
+          "error": { "$ref": "#/components/schemas/ApiError" }
+        }
+      },
+      "AttributeValueRef": {
+        "type": "object",
+        "properties": {
+          "attributeId": { "type": "string", "format": "uuid" },
+          "attributeValueId": { "type": "string", "format": "uuid" }
+        },
+        "required": ["attributeId", "attributeValueId"]
+      },
+      "CreateProductCommand": {
+        "type": "object",
+        "properties": {
+          "categoryId": { "type": "string", "format": "uuid" },
+          "name": { "type": "string", "maxLength": 255, "minLength": 0 },
+          "slug": { "type": "string", "maxLength": 255, "minLength": 0 },
+          "description": { "type": "string" },
+          "material": { "type": "string", "maxLength": 255, "minLength": 0 },
+          "basePrice": { "type": "integer", "format": "int64", "minimum": 0 },
+          "sizeChartId": { "type": "string", "format": "uuid" },
+          "images": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/ImageInput" }
+          },
+          "variants": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/VariantInput" },
+            "minItems": 1
+          }
+        },
+        "required": [
+          "basePrice",
+          "categoryId",
+          "images",
+          "name",
+          "slug",
+          "variants"
+        ]
+      },
+      "ImageInput": {
+        "type": "object",
+        "properties": {
+          "imageUrl": { "type": "string", "minLength": 1 },
+          "displayOrder": {
+            "type": "integer",
+            "format": "int32",
+            "default": 0
+          },
+          "isPrimary": { "type": "boolean", "default": false }
+        },
+        "required": ["imageUrl"]
+      },
+      "VariantInput": {
+        "type": "object",
+        "properties": {
+          "sku": { "type": "string", "maxLength": 100, "minLength": 0 },
+          "price": { "type": "integer", "format": "int64", "minimum": 0 },
+          "compareAtPrice": { "type": "integer", "format": "int64" },
+          "imageUrl": { "type": "string" },
+          "attributes": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/AttributeValueRef" }
+          }
+        },
+        "required": ["attributes", "price", "sku"]
+      },
+      "ApiResponseProductAdminDetail": {
+        "type": "object",
+        "properties": {
+          "success": { "type": "boolean" },
+          "data": { "$ref": "#/components/schemas/ProductAdminDetail" },
+          "error": { "$ref": "#/components/schemas/ApiError" }
+        }
+      },
+      "ProductAdminDetail": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string", "format": "uuid" },
+          "name": { "type": "string" },
+          "slug": { "type": "string" },
+          "description": { "type": "string" },
+          "material": { "type": "string" },
+          "basePrice": { "type": "integer", "format": "int64" },
+          "status": { "type": "integer", "format": "int32" },
+          "categoryId": { "type": "string", "format": "uuid" },
+          "sizeChartId": { "type": "string", "format": "uuid" },
+          "images": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/ProductImageDetail" }
+          },
+          "variants": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ProductAdminVariantDetail"
+            }
+          }
+        }
+      },
+      "ProductAdminVariantDetail": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string", "format": "uuid" },
+          "sku": { "type": "string" },
+          "price": { "type": "integer", "format": "int64" },
+          "compareAtPrice": { "type": "integer", "format": "int64" },
+          "imageUrl": { "type": "string" },
+          "isActive": { "type": "boolean" },
+          "attributes": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/ProductAttributeDetail" }
+          }
+        }
+      },
+      "ProductAttributeDetail": {
+        "type": "object",
+        "properties": {
+          "attributeId": { "type": "string", "format": "uuid" },
+          "attributeName": { "type": "string" },
+          "valueId": { "type": "string", "format": "uuid" },
+          "value": { "type": "string" },
+          "colorHex": { "type": "string" }
+        }
+      },
+      "ProductImageDetail": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string", "format": "uuid" },
+          "imageUrl": { "type": "string" },
+          "displayOrder": { "type": "integer", "format": "int32" },
+          "isPrimary": { "type": "boolean" }
+        }
+      },
+      "CreateShipmentCommand": {
+        "type": "object",
+        "properties": {
+          "carrierId": { "type": "string", "format": "uuid" },
+          "trackingCode": {
+            "type": "string",
+            "maxLength": 100,
+            "minLength": 0
+          },
+          "shippingFeeActual": {
+            "type": "integer",
+            "format": "int64",
+            "minimum": 0
+          }
+        },
+        "required": ["carrierId", "trackingCode"]
+      },
+      "ApiResponseShipment": {
+        "type": "object",
+        "properties": {
+          "success": { "type": "boolean" },
+          "data": { "$ref": "#/components/schemas/Shipment" },
+          "error": { "$ref": "#/components/schemas/ApiError" }
+        }
+      },
+      "Shipment": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string", "format": "uuid" },
+          "orderId": { "type": "string", "format": "uuid" },
+          "carrierId": { "type": "string", "format": "uuid" },
+          "carrierName": { "type": "string" },
+          "carrierCode": { "type": "string" },
+          "trackingCode": { "type": "string" },
+          "status": { "type": "integer", "format": "int32" },
+          "statusName": { "type": "string" },
+          "shippingFeeActual": { "type": "integer", "format": "int64" },
+          "packedBy": { "type": "string", "format": "uuid" },
+          "packedAt": { "type": "string", "format": "date-time" },
+          "shippedAt": { "type": "string", "format": "date-time" },
+          "deliveredAt": { "type": "string", "format": "date-time" },
+          "trackingUrl": { "type": "string" },
+          "createdAt": { "type": "string", "format": "date-time" },
+          "updatedAt": { "type": "string", "format": "date-time" }
+        }
+      },
+      "CreateCategoryCommand": {
+        "type": "object",
+        "description": "Request body for creating a category or subcategory",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Name of the category",
+            "example": "Áo Polo Nam",
+            "maxLength": 255,
+            "minLength": 0
+          },
+          "slug": {
+            "type": "string",
+            "description": "URL slug (optional, auto-generated from name if omitted)",
+            "example": "ao-polo-nam"
+          },
+          "parentId": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Parent category ID (null for top-level root categories)",
+            "example": "a0000000-0000-0000-0000-000000000001"
+          },
+          "imageUrl": {
+            "type": "string",
+            "description": "Banner or thumbnail image URL",
+            "example": "https://example.com/images/polo.jpg"
+          },
+          "sortOrder": {
+            "type": "integer",
+            "format": "int32",
+            "description": "Display sort order (ascending, auto-calculated if null)",
+            "example": 10,
+            "minimum": 0
+          },
+          "isActive": {
+            "type": "boolean",
+            "description": "Whether the category is active and visible",
+            "example": true
+          }
+        },
+        "required": ["name"]
+      },
+      "ChangeStaffRoleCommand": {
+        "type": "object",
+        "properties": {
+          "roleId": {
+            "type": "string",
+            "format": "uuid",
+            "description": "New role ID to assign"
+          }
+        },
+        "required": ["roleId"]
+      },
+      "ReorderCategoriesCommand": {
+        "type": "object",
+        "description": "Request body for batch reordering categories",
+        "properties": {
+          "items": {
+            "type": "array",
+            "description": "List of category items with new sort order",
+            "items": { "$ref": "#/components/schemas/ReorderItem" },
+            "minItems": 1
+          }
+        },
+        "required": ["items"]
+      },
+      "ReorderItem": {
+        "type": "object",
+        "description": "Single category order mapping",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Category ID to reorder"
+          },
+          "sortOrder": {
+            "type": "integer",
+            "format": "int32",
+            "description": "New sort order integer",
+            "example": 5,
+            "minimum": 0
+          }
+        },
+        "required": ["id", "sortOrder"]
+      },
+      "ApiResponseShipmentTrackingTimeline": {
+        "type": "object",
+        "properties": {
+          "success": { "type": "boolean" },
+          "data": { "$ref": "#/components/schemas/ShipmentTrackingTimeline" },
+          "error": { "$ref": "#/components/schemas/ApiError" }
+        }
+      },
+      "ShipmentTrackingEvent": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string", "format": "uuid" },
+          "shipmentId": { "type": "string", "format": "uuid" },
+          "status": { "type": "integer", "format": "int32" },
+          "statusName": { "type": "string" },
+          "location": { "type": "string" },
+          "description": { "type": "string" },
+          "occurredAt": { "type": "string", "format": "date-time" },
+          "createdAt": { "type": "string", "format": "date-time" }
+        }
+      },
+      "ShipmentTrackingTimeline": {
+        "type": "object",
+        "properties": {
+          "shipment": { "$ref": "#/components/schemas/Shipment" },
+          "events": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/ShipmentTrackingEvent" }
+          }
+        }
+      },
+      "ApiResponseProductDetail": {
+        "type": "object",
+        "properties": {
+          "success": { "type": "boolean" },
+          "data": { "$ref": "#/components/schemas/ProductDetail" },
+          "error": { "$ref": "#/components/schemas/ApiError" }
+        }
+      },
+      "ProductCategoryDetail": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string", "format": "uuid" },
+          "name": { "type": "string" },
+          "slug": { "type": "string" }
+        }
+      },
+      "ProductDetail": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string", "format": "uuid" },
+          "name": { "type": "string" },
+          "slug": { "type": "string" },
+          "description": { "type": "string" },
+          "material": { "type": "string" },
+          "status": { "type": "integer", "format": "int32" },
+          "avgRating": { "type": "number", "format": "double" },
+          "reviewCount": { "type": "integer", "format": "int32" },
+          "soldCount": { "type": "integer", "format": "int32" },
+          "basePrice": { "type": "integer", "format": "int64" },
+          "category": { "$ref": "#/components/schemas/ProductCategoryDetail" },
+          "images": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/ProductImageDetail" }
+          },
+          "variants": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/ProductVariantDetail" }
+          },
+          "reviews": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/ProductReviewDetail" }
+          }
+        }
+      },
+      "ProductReviewDetail": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string", "format": "uuid" },
+          "rating": { "type": "integer", "format": "int32" },
+          "comment": { "type": "string" },
+          "createdAt": { "type": "string", "format": "date-time" }
+        }
+      },
+      "ProductVariantDetail": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string", "format": "uuid" },
+          "sku": { "type": "string" },
+          "imageUrl": { "type": "string" },
+          "price": { "type": "integer", "format": "int64" },
+          "compareAtPrice": { "type": "integer", "format": "int64" },
+          "isActive": { "type": "boolean" },
+          "onHand": { "type": "integer", "format": "int32" },
+          "reserved": { "type": "integer", "format": "int32" },
+          "availableStock": { "type": "integer", "format": "int32" },
+          "inStock": { "type": "boolean" },
+          "attributes": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/ProductAttributeDetail" }
+          }
+        }
+      },
+      "Pageable": {
+        "type": "object",
+        "properties": {
+          "page": { "type": "integer", "format": "int32", "minimum": 0 },
+          "size": { "type": "integer", "format": "int32", "minimum": 1 },
+          "sort": { "type": "array", "items": { "type": "string" } }
+        }
+      },
+      "ApiResponsePageResponseCustomer": {
+        "type": "object",
+        "properties": {
+          "success": { "type": "boolean" },
+          "data": { "$ref": "#/components/schemas/PageResponseCustomer" },
+          "error": { "$ref": "#/components/schemas/ApiError" }
+        }
+      },
+      "PageResponseCustomer": {
+        "type": "object",
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/Customer" }
+          },
+          "page": { "type": "integer", "format": "int32" },
+          "size": { "type": "integer", "format": "int32" },
+          "totalElements": { "type": "integer", "format": "int64" },
+          "totalPages": { "type": "integer", "format": "int32" },
+          "first": { "type": "boolean" },
+          "last": { "type": "boolean" }
+        }
+      },
+      "ApiResponseListCustomerAddress": {
+        "type": "object",
+        "properties": {
+          "success": { "type": "boolean" },
+          "data": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/CustomerAddress" }
+          },
+          "error": { "$ref": "#/components/schemas/ApiError" }
+        }
+      },
+      "ApiResponseCategoryTreeResponse": {
+        "type": "object",
+        "properties": {
+          "success": { "type": "boolean" },
+          "data": { "$ref": "#/components/schemas/CategoryTreeResponse" },
+          "error": { "$ref": "#/components/schemas/ApiError" }
+        }
+      },
+      "CategoryTreeResponse": {
+        "type": "object",
+        "description": "Hierarchical category tree node for navigation menu and storefront",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Category ID"
+          },
+          "parentId": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Parent category ID"
+          },
+          "name": { "type": "string", "description": "Category display name" },
+          "slug": { "type": "string", "description": "Unique URL slug" },
+          "imageUrl": {
+            "type": "string",
+            "description": "Banner or icon image URL"
+          },
+          "sortOrder": {
+            "type": "integer",
+            "format": "int32",
+            "description": "Display sort order"
+          },
+          "isActive": {
+            "type": "boolean",
+            "description": "Whether the category is active"
+          },
+          "children": {
+            "type": "array",
+            "description": "Nested child subcategories",
+            "items": { "$ref": "#/components/schemas/CategoryTreeResponse" }
+          }
+        }
+      },
+      "ApiResponseListCategoryTreeResponse": {
+        "type": "object",
+        "properties": {
+          "success": { "type": "boolean" },
+          "data": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/CategoryTreeResponse" }
+          },
+          "error": { "$ref": "#/components/schemas/ApiError" }
+        }
+      },
+      "ApiResponsePageResponseStaffMember": {
+        "type": "object",
+        "properties": {
+          "success": { "type": "boolean" },
+          "data": { "$ref": "#/components/schemas/PageResponseStaffMember" },
+          "error": { "$ref": "#/components/schemas/ApiError" }
+        }
+      },
+      "PageResponseStaffMember": {
+        "type": "object",
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/StaffMember" }
+          },
+          "page": { "type": "integer", "format": "int32" },
+          "size": { "type": "integer", "format": "int32" },
+          "totalElements": { "type": "integer", "format": "int64" },
+          "totalPages": { "type": "integer", "format": "int32" },
+          "first": { "type": "boolean" },
+          "last": { "type": "boolean" }
+        }
+      },
+      "ApiResponseStaffStats": {
+        "type": "object",
+        "properties": {
+          "success": { "type": "boolean" },
+          "data": { "$ref": "#/components/schemas/StaffStats" },
+          "error": { "$ref": "#/components/schemas/ApiError" }
+        }
+      },
+      "StaffStats": {
+        "type": "object",
+        "properties": {
+          "totalCount": {
+            "type": "integer",
+            "format": "int64",
+            "description": "Total number of non-deleted staff accounts",
+            "example": 12
+          },
+          "activeCount": {
+            "type": "integer",
+            "format": "int64",
+            "description": "Number of active staff accounts",
+            "example": 10
+          },
+          "lockedCount": {
+            "type": "integer",
+            "format": "int64",
+            "description": "Number of locked staff accounts",
+            "example": 2
+          }
+        }
+      },
+      "ApiResponseListShippingCarrier": {
+        "type": "object",
+        "properties": {
+          "success": { "type": "boolean" },
+          "data": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/ShippingCarrier" }
+          },
+          "error": { "$ref": "#/components/schemas/ApiError" }
+        }
+      },
+      "ShippingCarrier": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string", "format": "uuid" },
+          "code": { "type": "string" },
+          "name": { "type": "string" },
+          "trackingUrlTemplate": { "type": "string" },
+          "createdAt": { "type": "string", "format": "date-time" },
+          "updatedAt": { "type": "string", "format": "date-time" }
+        }
+      },
+      "ApiResponseListStaffRole": {
+        "type": "object",
+        "properties": {
+          "success": { "type": "boolean" },
+          "data": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/StaffRole" }
+          },
+          "error": { "$ref": "#/components/schemas/ApiError" }
+        }
+      },
+      "StaffRole": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Role unique identifier"
+          },
+          "code": {
+            "type": "string",
+            "description": "Role code",
+            "example": "ADMIN"
+          },
+          "name": {
+            "type": "string",
+            "description": "Role display name",
+            "example": "Quản trị viên"
+          }
+        }
+      },
+      "ApiResponsePageResponseAuditLog": {
+        "type": "object",
+        "properties": {
+          "success": { "type": "boolean" },
+          "data": { "$ref": "#/components/schemas/PageResponseAuditLog" },
+          "error": { "$ref": "#/components/schemas/ApiError" }
+        }
+      },
+      "AuditLog": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string", "format": "uuid" },
+          "actorType": { "type": "integer", "format": "int32" },
+          "actorId": { "type": "string", "format": "uuid" },
+          "action": { "type": "string" },
+          "entityType": { "type": "string" },
+          "entityId": { "type": "string", "format": "uuid" },
+          "beforeState": { "type": "object", "additionalProperties": {} },
+          "afterState": { "type": "object", "additionalProperties": {} },
+          "ip": { "type": "string" },
+          "userAgent": { "type": "string" },
+          "createdAt": { "type": "string", "format": "date-time" }
+        }
+      },
+      "PageResponseAuditLog": {
+        "type": "object",
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/AuditLog" }
+          },
+          "page": { "type": "integer", "format": "int32" },
+          "size": { "type": "integer", "format": "int32" },
+          "totalElements": { "type": "integer", "format": "int64" },
+          "totalPages": { "type": "integer", "format": "int32" },
+          "first": { "type": "boolean" },
+          "last": { "type": "boolean" }
+        }
+      },
+      "ApiResponseAuditLog": {
+        "type": "object",
+        "properties": {
+          "success": { "type": "boolean" },
+          "data": { "$ref": "#/components/schemas/AuditLog" },
+          "error": { "$ref": "#/components/schemas/ApiError" }
+        }
+      }
+    }
+  }
+}

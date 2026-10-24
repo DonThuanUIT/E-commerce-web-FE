@@ -142,10 +142,10 @@ export function normalizeApiError(error: unknown): ApiRequestError {
         status,
         code: status ? `HTTP_${status}` : error.code || 'NETWORK_ERROR',
         message: status
-          ? 'Không thể hoàn tất yêu cầu. Vui lòng thử lại.'
+          ? 'Unable to complete request. Please try again.'
           : isTimeout
-            ? 'Yêu cầu đã hết thời gian chờ. Vui lòng thử lại.'
-            : 'Không thể kết nối đến máy chủ. Vui lòng thử lại.',
+            ? 'Request timed out. Please try again.'
+            : 'Unable to connect to server. Please try again.',
         timestamp: new Date().toISOString(),
         fieldErrors: [],
       },
@@ -157,7 +157,7 @@ export function normalizeApiError(error: unknown): ApiRequestError {
     {
       status: 0,
       code: 'UNKNOWN_ERROR',
-      message: 'Đã xảy ra lỗi. Vui lòng thử lại.',
+      message: 'An error occurred. Please try again.',
       timestamp: new Date().toISOString(),
       fieldErrors: [],
     },

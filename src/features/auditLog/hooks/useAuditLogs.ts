@@ -28,7 +28,7 @@ export function useAuditLogDetail(id: string | null) {
   return useQuery({
     queryKey: auditLogKeys.detail(id || ''),
     queryFn: () => {
-      if (!id) throw new Error('ID không hợp lệ');
+      if (!id) throw new Error('Invalid audit log ID');
       return auditLogService.getAuditLogById(id);
     },
     enabled: Boolean(id),

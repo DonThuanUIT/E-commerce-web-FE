@@ -19,7 +19,7 @@ test('staffService.getStaffList handles successful pagination response', async (
         fullName: 'Elena Rostova',
         roleId: 'role-01',
         roleCode: 'ADMIN',
-        roleName: 'Quản trị viên',
+        roleName: 'Administrator',
         status: 1,
         createdAt: '2026-01-15T08:30:00Z',
         updatedAt: '2026-01-15T08:30:00Z',
@@ -63,7 +63,7 @@ test('staffService.createStaff dispatches POST and unwraps created entity', asyn
     fullName: 'Nguyen Van C',
     roleId: 'role-02',
     roleCode: 'MANAGER',
-    roleName: 'Quản lý vận hành',
+    roleName: 'Operations Manager',
     status: 1,
     createdAt: '2026-10-19T10:00:00Z',
     updatedAt: '2026-10-19T10:00:00Z',
@@ -103,7 +103,7 @@ test('staffService.lockStaff dispatches PATCH to lock endpoint', async () => {
     fullName: 'Locked User',
     roleId: 'role-03',
     roleCode: 'STAFF',
-    roleName: 'Nhân viên',
+    roleName: 'Staff Member',
     status: 2, // LOCKED
     createdAt: '2026-03-01T10:00:00Z',
     updatedAt: '2026-10-19T12:00:00Z',
@@ -136,7 +136,7 @@ test('staffService rejects with ApiRequestError on failure envelope', async () =
         error: {
           status: 400,
           code: 'CANNOT_LOCK_LAST_ADMIN',
-          message: 'Không thể khoá tài khoản quản trị viên duy nhất',
+          message: 'Cannot lock the only active administrator account',
           timestamp: '2026-10-19T12:00:00Z',
           path: '/api/v1/admin/staff/admin-1/lock',
           fieldErrors: [],
@@ -162,8 +162,100 @@ test('staffService rejects with ApiRequestError on failure envelope', async () =
     assert.equal(err.code, 'CANNOT_LOCK_LAST_ADMIN');
     assert.equal(
       err.message,
-      'Không thể khoá tài khoản quản trị viên duy nhất',
+      'Cannot lock the only active administrator account',
     );
     return true;
   });
+});
+
+test('staffService.setInitialPassword dispatches POST to /v1/auth/staff/set-password', async () => {
+  const client = createMockClient(async (config) => {
+    assert.equal(config.method, 'post');
+    assert.equal(config.url, '/v1/auth/staff/set-password');
+    const body = JSON.parse(config.data);
+    assert.equal(body.token, 'valid-setup-token-123');
+    assert.equal(body.newPassword, 'P@ssword123!');
+
+    return {
+      config,
+      data: {
+        success: true,
+        data: 'Password set successfully',
+        error: null,
+      },
+      status: 200,
+      statusText: 'OK',
+      headers: {},
+    };
+  });
+
+  const response = await client.post('/v1/auth/staff/set-password', {
+    token: 'valid-setup-token-123',
+    newPassword: 'P@ssword123!',
+  });
+
+  assert.equal(response.status, 200);
+  assert.equal(response.data.success, true);
+  assert.equal(response.data.data, 'Password set successfully');
+});
+
+test('staffService.changeRole dispatches PATCH to /v1/admin/staff/:id/role', async () => {
+  const staffId = 'staff-uuid-007';
+  const newRoleId = 'role-manager-id';
+
+  const client = createMockClient(async (config) => {
+    assert.equal(config.method, 'patch');
+    assert.equal(config.url, `/v1/admin/staff/${staffId}/role`);
+    const body = JSON.parse(config.data);
+    assert.equal(body.roleId, newRoleId);
+
+    return {
+      config,
+      data: {
+        success: true,
+        data: { id: staffId, roleId: newRoleId, roleCode: 'MANAGER' },
+        error: null,
+      },
+      status: 200,
+      statusText: 'OK',
+      headers: {},
+    };
+  });
+
+  const response = await client.patch(`/v1/admin/staff/${staffId}/role`, {
+    roleId: newRoleId,
+  });
+
+  assert.equal(response.status, 200);
+  assert.equal(response.data.data.roleId, newRoleId);
+});
+
+test('staffService.getStaffStats dispatches GET to /v1/admin/staff/stats', async () => {
+  const mockStats = {
+    totalCount: 12,
+    activeCount: 10,
+    lockedCount: 2,
+  };
+
+  const client = createMockClient(async (config) => {
+    assert.equal(config.method, 'get');
+    assert.equal(config.url, '/v1/admin/staff/stats');
+
+    return {
+      config,
+      data: {
+        success: true,
+        data: mockStats,
+        error: null,
+      },
+      status: 200,
+      statusText: 'OK',
+      headers: {},
+    };
+  });
+
+  const response = await client.get('/v1/admin/staff/stats');
+  assert.equal(response.status, 200);
+  assert.equal(response.data.success, true);
+  assert.deepEqual(response.data.data, mockStats);
 });

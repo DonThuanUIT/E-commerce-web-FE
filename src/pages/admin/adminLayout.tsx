@@ -1,4 +1,4 @@
-﻿import React from 'react';
+import React from 'react';
 import { NavLink, Outlet, useLocation } from 'react-router-dom';
 import {
   LayoutDashboard,
@@ -95,129 +95,121 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
   ];
 
   return (
-    <div className="min-h-screen bg-gray-100 font-sans text-gray-900 antialiased flex flex-col md:flex-row">
-      {/* Aside Sidebar: Fixed 260px wide as in Figma EL-ae445f6b */}
-      <aside className="w-full md:w-[260px] md:min-h-screen shrink-0 bg-white border-r border-gray-200 flex flex-col justify-between z-20">
+    <div className="min-h-screen bg-surface-container-low font-body-md text-on-surface antialiased flex flex-col md:flex-row">
+      {/* Aside Sidebar: Fixed 260px wide matching Stitch Screen 9 & 10 */}
+      <aside className="w-full md:w-[260px] md:min-h-screen shrink-0 bg-[#111827] border-r border-[#1f2937] flex flex-col justify-between z-20">
         <div>
-          {/* Top Brand Header (Figma EL-80625a07) */}
-          <div className="h-16 flex items-center justify-between px-5 border-b border-gray-200">
-            <div className="flex items-center gap-2.5">
-              <div className="flex h-7 w-7 items-center justify-center rounded bg-black text-white font-bold text-xs tracking-widest">
-                A
-              </div>
-              <div>
-                <span className="font-semibold tracking-wider text-sm text-gray-900 uppercase block leading-tight">
-                  ATELIER
-                </span>
-                <span className="text-[10px] tracking-widest text-gray-600 uppercase block font-mono">
-                  OS / ADMIN
-                </span>
-              </div>
+          {/* Top Brand Header */}
+          <div className="h-16 flex items-center justify-between px-space-md border-b border-[#1f2937]">
+            <div className="flex flex-col">
+              <span className="font-headline-sm text-white tracking-tight uppercase leading-none">
+                ATELIER
+              </span>
+              <span className="font-label-sm text-[#9ca3af] tracking-wider uppercase mt-1">
+                OS / ADMIN
+              </span>
             </div>
 
-            {/* Version Badge (Figma EL-31ac622e) */}
-            <span className="px-2 py-0.5 rounded text-[11px] font-mono font-medium bg-gray-100 text-gray-600 border border-gray-200">
+            {/* Version Badge */}
+            <span className="font-label-sm px-2 py-0.5 rounded-lg bg-[#1f2937] text-[#e5e7eb] border border-[#374151]">
               v2.4
             </span>
           </div>
 
-          {/* Section: OPERATIONS (Figma EL-280cfac0) */}
-          <div className="px-5 pt-4 pb-2">
-            <span className="text-[10px] font-semibold tracking-widest text-gray-600 uppercase font-mono block">
-              OPERATIONS
+          {/* Section: OPERATIONS */}
+          <div className="px-space-md py-space-sm">
+            <span className="font-label-sm text-[#6b7280] uppercase tracking-wider block mb-space-xs">
+              Operations
             </span>
+            {/* Navigation Items */}
+            <nav className="flex flex-col gap-1">
+              {navItems.map((item) => {
+                const isActive = location.pathname === item.href;
+                const Icon = item.icon;
+
+                return (
+                  <NavLink
+                    key={item.href}
+                    to={item.href}
+                    className={`flex items-center justify-between px-space-sm py-2 rounded-lg transition-all font-body-sm group ${
+                      isActive
+                        ? 'bg-[#1f2937] text-white font-medium'
+                        : 'text-[#9ca3af] hover:bg-[#1f2937] hover:text-white'
+                    }`}
+                  >
+                    <div className="flex items-center gap-2 truncate">
+                      <Icon
+                        className={`h-4 w-4 shrink-0 ${
+                          isActive
+                            ? 'text-white'
+                            : 'text-[#9ca3af] group-hover:text-white'
+                        }`}
+                      />
+                      <span className="truncate">{item.name}</span>
+                    </div>
+
+                    {item.ready ? (
+                      <span
+                        className="h-2 w-2 rounded-full shrink-0 bg-emerald-500"
+                        title="Feature Available"
+                      />
+                    ) : (
+                      <span className="font-label-sm px-1.5 py-0.5 rounded text-[10px] bg-[#1f2937] text-[#9ca3af] border border-[#374151]">
+                        Soon
+                      </span>
+                    )}
+                  </NavLink>
+                );
+              })}
+            </nav>
           </div>
-
-          {/* Navigation Items (Figma Nav EL-99324298) */}
-          <nav className="px-3 space-y-1">
-            {navItems.map((item) => {
-              const isActive = location.pathname === item.href;
-              const Icon = item.icon;
-
-              return (
-                <NavLink
-                  key={item.href}
-                  to={item.href}
-                  className={`flex items-center justify-between px-3 py-2 rounded-lg text-xs font-medium transition-colors ${
-                    isActive
-                      ? 'bg-black text-white shadow-xs'
-                      : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
-                  }`}
-                >
-                  <div className="flex items-center gap-2.5 truncate">
-                    <Icon
-                      className={`h-4 w-4 shrink-0 ${
-                        isActive ? 'text-white' : 'text-gray-500'
-                      }`}
-                    />
-                    <span className="truncate">{item.name}</span>
-                  </div>
-
-                  {item.ready ? (
-                    <span
-                      className={`h-1.5 w-1.5 rounded-full shrink-0 ${
-                        isActive ? 'bg-emerald-400' : 'bg-emerald-500'
-                      }`}
-                      title="Tính năng sẵn sàng"
-                    />
-                  ) : (
-                    <span
-                      className={`text-[9px] font-mono px-1 py-0.2 rounded tracking-wider ${
-                        isActive
-                          ? 'bg-neutral-800 text-gray-400'
-                          : 'bg-gray-100 text-gray-600'
-                      }`}
-                    >
-                      Sắp có
-                    </span>
-                  )}
-                </NavLink>
-              );
-            })}
-          </nav>
         </div>
 
-        {/* Bottom Section (Figma EL-7069b44f) */}
-        <div className="p-4 border-t border-gray-200 space-y-3">
-          {/* Environment Status (Figma EL-21b44d32 & EL-699500f6) */}
-          <div className="flex items-center justify-between px-2 text-[11px] text-gray-600 font-mono">
-            <div className="flex items-center gap-1.5">
-              <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
-              <span className="font-semibold text-gray-700">Production</span>
+        {/* Bottom Section */}
+        <div className="p-space-md border-t border-[#1f2937] flex flex-col gap-space-sm">
+          {/* Environment Status */}
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <span className="w-2 h-2 rounded-full bg-emerald-500" />
+              <span className="font-label-sm text-[#9ca3af]">Production</span>
             </div>
-            <span>MXP / CDN</span>
+            <span className="font-label-sm text-[#6b7280]">MXP / CDN</span>
           </div>
 
           {/* Storefront Quick Link */}
           <NavLink
             to="/"
-            className="flex items-center gap-2 px-2.5 py-1.5 rounded-lg text-xs text-gray-600 hover:text-gray-900 hover:bg-gray-50 transition-colors"
+            className="flex items-center gap-2 px-space-sm py-1.5 rounded-lg font-body-sm text-[#9ca3af] hover:text-white hover:bg-[#1f2937] transition-colors"
           >
-            <Store className="h-3.5 w-3.5 text-gray-500" />
-            <span>Về Cửa Hàng (Storefront)</span>
+            <Store className="h-4 w-4 text-[#9ca3af]" />
+            <span>Storefront Front-Desk</span>
           </NavLink>
 
-          {/* Current Staff Card (Figma EL-3cadfb94) */}
-          <div className="flex items-center justify-between p-2 rounded-lg bg-gray-50 border border-gray-200">
-            <div className="flex items-center gap-2 truncate">
-              <div className="h-7 w-7 rounded-full bg-black text-white font-bold text-[10px] flex items-center justify-center uppercase shrink-0">
-                AG
+          {/* Current Staff Card */}
+          <div className="flex items-center justify-between p-2 rounded-lg bg-[#1a2234] border border-[#2d3748]">
+            <div className="flex items-center gap-2.5 truncate">
+              <div className="w-8 h-8 rounded-full bg-primary text-on-primary flex items-center justify-center font-headline-sm text-xs shrink-0">
+                AV
               </div>
               <div className="truncate text-left">
-                <p className="text-xs font-semibold text-gray-900 truncate">
+                <span className="font-label-sm text-white block truncate">
                   Atelier Global
-                </p>
-                <p className="text-[10px] text-emerald-800 font-medium">
+                </span>
+                <span className="font-body-sm text-[#9ca3af] text-[10px] block truncate">
                   Staff Role Active
-                </p>
+                </span>
               </div>
             </div>
 
             <button
               type="button"
-              onClick={() => alert('Đăng xuất phiên làm việc')}
-              title="Đăng xuất"
-              className="p-1 rounded text-gray-400 hover:text-gray-800 transition-colors cursor-pointer"
+              onClick={() => {
+                localStorage.removeItem('token');
+                localStorage.removeItem('access_token');
+                window.location.href = '/auth/login';
+              }}
+              title="Sign Out"
+              className="p-1 rounded-lg text-[#9ca3af] hover:text-white transition-colors cursor-pointer"
             >
               <LogOut className="h-4 w-4" />
             </button>
@@ -226,9 +218,52 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
       </aside>
 
       {/* Main Content Area */}
-      <main className="flex-1 min-w-0 overflow-y-auto">
-        {children || <Outlet />}
-      </main>
+      <div className="flex-1 min-w-0 flex flex-col bg-surface-container-low">
+        {/* Sticky Top Header Bar matching Stitch Screen 9 & 10 */}
+        <header className="sticky top-0 z-40 h-16 bg-[#ffffff] border-b border-[#e5e7eb] px-4 sm:px-8 flex items-center justify-between">
+          <div className="flex items-center gap-3 w-72 md:w-96">
+            <div className="relative w-full flex items-center">
+              <input
+                className="w-full h-[38px] pl-3 pr-14 bg-surface-container-lowest border border-[#e5e7eb] rounded-lg font-body-sm text-on-surface placeholder:text-on-surface-variant focus:outline-none focus:border-primary transition-colors"
+                placeholder="Search operators, audit logs, permissions..."
+                type="text"
+              />
+              <div className="absolute right-2.5 flex items-center gap-0.5 px-1.5 py-0.5 bg-surface-container border border-outline-variant rounded text-[10px] font-label-sm text-on-surface-variant">
+                <span>⌘</span>
+                <span>K</span>
+              </div>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-space-md">
+            <div className="hidden sm:flex items-center gap-2 px-2.5 py-1 rounded-lg bg-surface-container border border-outline-variant text-secondary text-[11px] font-label-sm">
+              <span className="h-2 w-2 rounded-full bg-emerald-500" />
+              <span>STRICT_PKI ENFORCED</span>
+            </div>
+
+            <div className="h-6 w-px bg-outline-variant" />
+
+            <div className="flex items-center gap-space-sm pl-1">
+              <div className="flex flex-col text-right">
+                <span className="font-label-md text-on-surface leading-tight">
+                  Alexander Vance
+                </span>
+                <span className="font-label-sm text-on-surface-variant leading-tight">
+                  Lead Operations
+                </span>
+              </div>
+              <div className="w-8 h-8 rounded-full bg-primary text-on-primary flex items-center justify-center font-label-sm">
+                AV
+              </div>
+            </div>
+          </div>
+        </header>
+
+        {/* Page Content */}
+        <main className="flex-1 min-w-0 bg-surface-container-low">
+          {children || <Outlet />}
+        </main>
+      </div>
     </div>
   );
 };

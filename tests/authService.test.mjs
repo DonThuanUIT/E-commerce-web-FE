@@ -57,7 +57,7 @@ test('authService rejects on 409 EMAIL_ALREADY_REGISTERED with ApiRequestError',
         error: {
           status: 409,
           code: 'EMAIL_ALREADY_REGISTERED',
-          message: 'Email đã tồn tại trong hệ thống',
+          message: 'Email is already registered in the system',
           timestamp: '2026-10-17T22:00:00Z',
           path: '/api/v1/auth/register',
           fieldErrors: [],
@@ -88,7 +88,7 @@ test('authService rejects on 409 EMAIL_ALREADY_REGISTERED with ApiRequestError',
       assert.ok(err instanceof ApiRequestError);
       assert.equal(err.status, 409);
       assert.equal(err.code, 'EMAIL_ALREADY_REGISTERED');
-      assert.equal(err.message, 'Email đã tồn tại trong hệ thống');
+      assert.equal(err.message, 'Email is already registered in the system');
       return true;
     },
   );
