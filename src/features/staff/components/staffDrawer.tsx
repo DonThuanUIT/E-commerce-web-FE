@@ -65,7 +65,7 @@ export const StaffDrawer: React.FC<StaffDrawerProps> = ({
       });
 
       setSuccessToast(
-        'Activation link and account setup dispatched successfully via email.',
+        `Setup instructions sent to ${email.trim().toLowerCase()}`,
       );
       setTimeout(() => {
         setFullName('');

@@ -73,7 +73,8 @@ export const ProductAccordion: React.FC<ProductAccordionProps> = ({
           <div className="space-y-2 pb-5 text-xs leading-relaxed text-neutral-600">
             <p>
               <strong>Fabric Composition:</strong>{' '}
-              {product.material || '100% Long-staple cotton blended with elastane'}
+              {product.material ||
+                '100% Long-staple cotton blended with elastane'}
             </p>
             <p>
               <strong>Care Instructions:</strong> Machine wash cold on delicate

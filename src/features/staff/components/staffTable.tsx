@@ -7,7 +7,6 @@ import {
   Lock,
   Unlock,
   Loader2,
-  Key,
 } from 'lucide-react';
 import type { StaffPageResponse, StaffMember } from '../types/staffType';
 
@@ -82,9 +81,9 @@ export const StaffTable: React.FC<StaffTableProps> = ({
           <thead>
             <tr className="bg-surface-container text-secondary font-label-sm uppercase tracking-wider">
               <th className="py-3 px-space-md font-medium">Staff Member</th>
-              <th className="py-3 px-space-md font-medium">Internal Routing</th>
+              <th className="py-3 px-space-md font-medium">Email</th>
               <th className="py-3 px-space-md font-medium">Assigned Role</th>
-              <th className="py-3 px-space-md font-medium">2FA Protocol</th>
+              <th className="py-3 px-space-md font-medium">Created</th>
               <th className="py-3 px-space-md font-medium">Account Status</th>
               <th className="py-3 px-space-md font-medium text-right">
                 Actions
@@ -132,7 +131,7 @@ export const StaffTable: React.FC<StaffTableProps> = ({
                     </div>
                   </td>
 
-                  {/* Internal Routing */}
+                  {/* Email */}
                   <td className="py-space-md px-space-md">
                     <span className="font-body-sm text-secondary font-mono">
                       {staff.email}
@@ -146,25 +145,24 @@ export const StaffTable: React.FC<StaffTableProps> = ({
                     </span>
                   </td>
 
-                  {/* 2FA Protocol */}
+                  {/* Created */}
                   <td className="py-space-md px-space-md">
-                    <span className="inline-flex items-center gap-1 font-label-sm text-on-surface">
-                      <Key className="h-3.5 w-3.5 text-on-surface" />
-                      <span>2FA Enforced</span>
+                    <span className="font-body-sm text-secondary font-mono">
+                      {new Date(staff.createdAt).toLocaleDateString('vi-VN')}
                     </span>
                   </td>
 
                   {/* Account Status */}
                   <td className="py-space-md px-space-md">
                     {isActive ? (
-                      <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-lg bg-surface-container-high text-on-surface font-label-sm uppercase">
-                        <span className="w-1.5 h-1.5 rounded-full bg-primary" />
-                        <span>Active</span>
+                      <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-lg bg-emerald-50 text-emerald-700 border border-emerald-200 font-label-sm font-semibold uppercase">
+                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-600" />
+                        <span>ACTIVE</span>
                       </span>
                     ) : (
-                      <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-lg bg-error-container text-on-error-container font-label-sm uppercase">
-                        <span className="w-1.5 h-1.5 rounded-full bg-error" />
-                        <span>Locked</span>
+                      <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-lg bg-rose-50 text-rose-700 border border-rose-200 font-label-sm font-semibold uppercase">
+                        <span className="w-1.5 h-1.5 rounded-full bg-rose-600" />
+                        <span>LOCKED</span>
                       </span>
                     )}
                   </td>

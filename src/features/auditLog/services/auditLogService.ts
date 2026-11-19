@@ -1,10 +1,10 @@
-import { axiosInstance } from '../../../config/axios';
-import type { ApiResponse } from '../../../shared/types/apiType';
+import { staffAxios } from '../../staffAuth/services/staffAxios.ts';
+import type { ApiResponse } from '../../../shared/types/apiType.ts';
 import type {
   AuditLog,
   AuditLogPageResponse,
   AuditLogQueryParams,
-} from '../types/auditLogType';
+} from '../types/auditLogType.ts';
 
 /**
  * Administrative Audit Logs API Service.
@@ -17,7 +17,7 @@ export const auditLogService = {
   async getAuditLogs(
     params?: AuditLogQueryParams,
   ): Promise<AuditLogPageResponse> {
-    const response = await axiosInstance.get<ApiResponse<AuditLogPageResponse>>(
+    const response = await staffAxios.get<ApiResponse<AuditLogPageResponse>>(
       '/v1/admin/audit-logs',
       { params },
     );
@@ -35,7 +35,7 @@ export const auditLogService = {
    * Retrieves single audit log entry by ID, including complete before/after snapshots.
    */
   async getAuditLogById(id: string): Promise<AuditLog> {
-    const response = await axiosInstance.get<ApiResponse<AuditLog>>(
+    const response = await staffAxios.get<ApiResponse<AuditLog>>(
       `/v1/admin/audit-logs/${id}`,
     );
 
