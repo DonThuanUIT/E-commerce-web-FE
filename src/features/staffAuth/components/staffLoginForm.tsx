@@ -11,11 +11,11 @@ import {
   ArrowLeft,
 } from 'lucide-react';
 import { useStaffAuthStore } from '../stores/useStaffAuthStore.ts';
+import { getDefaultAdminRoute } from '../utils/rbacNavigation.ts';
 
 export const StaffLoginForm: React.FC = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  const redirectUrl = searchParams.get('redirect') || '/admin/staff';
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -40,8 +40,11 @@ export const StaffLoginForm: React.FC = () => {
     }
 
     try {
-      await login({ email: trimmedEmail, password });
-      navigate(redirectUrl, { replace: true });
+      const response = await login({ email: trimmedEmail, password });
+      const redirectParam = searchParams.get('redirect');
+      const targetUrl =
+        redirectParam || getDefaultAdminRoute(response.staff.permissions);
+      navigate(targetUrl, { replace: true });
     } catch (err: unknown) {
       const errorObj = err as { message?: string };
       setErrorMessage(

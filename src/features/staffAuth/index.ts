@@ -1,5 +1,6 @@
 export * from './types/staffAuthType.ts';
 export * from './utils/staffTokenStorage.ts';
+export * from './utils/rbacNavigation.ts';
 export * from './services/staffAxios.ts';
 export * from './services/staffAuthService.ts';
 export * from './stores/useStaffAuthStore.ts';
