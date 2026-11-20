@@ -213,7 +213,9 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
                     {staff?.fullName || 'Atelier Global'}
                   </span>
                   <span className="font-body-sm text-[#9ca3af] text-[10px] block truncate">
-                    {staff?.role.name || 'Staff Role Active'}
+                    {staff?.role?.name ||
+                      staff?.roleCode ||
+                      'Staff Role Active'}
                   </span>
                 </div>
               </div>
@@ -265,7 +267,7 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
                     {staff?.fullName || 'Alexander Vance'}
                   </span>
                   <span className="font-label-sm text-on-surface-variant leading-tight text-xs">
-                    {staff?.role.name || 'Lead Operations'}
+                    {staff?.role?.name || staff?.roleCode || 'Lead Operations'}
                   </span>
                 </div>
                 <div className="w-8 h-8 rounded-full bg-indigo-600 text-white flex items-center justify-center font-label-sm font-medium">

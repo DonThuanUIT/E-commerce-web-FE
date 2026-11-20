@@ -8,8 +8,9 @@ export interface StaffProfile {
   id: string;
   email: string;
   fullName: string;
-  status: 'ACTIVE' | 'LOCKED';
-  role: StaffRoleInfo;
+  status?: 'ACTIVE' | 'LOCKED';
+  roleCode?: string;
+  role?: StaffRoleInfo;
   permissions: string[];
 }
 
