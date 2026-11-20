@@ -1,5 +1,5 @@
-import { axiosInstance } from '../../../config/axios';
-import type { ApiResponse } from '../../../shared/types/apiType';
+import { staffAxios } from '../../staffAuth/services/staffAxios.ts';
+import type { ApiResponse } from '../../../shared/types/apiType.ts';
 import type {
   ChangeStaffRoleCommand,
   CreateStaffCommand,
@@ -9,7 +9,7 @@ import type {
   StaffQueryParams,
   StaffRole,
   StaffStats,
-} from '../types/staffType';
+} from '../types/staffType.ts';
 
 /**
  * Administrative Staff Management API Service.
@@ -20,7 +20,7 @@ export const staffService = {
    * Retrieves paginated list of staff members matching optional filters.
    */
   async getStaffList(params?: StaffQueryParams): Promise<StaffPageResponse> {
-    const response = await axiosInstance.get<ApiResponse<StaffPageResponse>>(
+    const response = await staffAxios.get<ApiResponse<StaffPageResponse>>(
       '/v1/admin/staff',
       { params },
     );
@@ -36,7 +36,7 @@ export const staffService = {
    * Retrieves single staff member details by UUID.
    */
   async getStaffById(id: string): Promise<StaffMember> {
-    const response = await axiosInstance.get<ApiResponse<StaffMember>>(
+    const response = await staffAxios.get<ApiResponse<StaffMember>>(
       `/v1/admin/staff/${id}`,
     );
     if (response.data && response.data.success && response.data.data) {
@@ -50,7 +50,7 @@ export const staffService = {
    */
   async getRoles(): Promise<StaffRole[]> {
     const response =
-      await axiosInstance.get<ApiResponse<StaffRole[]>>('/v1/admin/roles');
+      await staffAxios.get<ApiResponse<StaffRole[]>>('/v1/admin/roles');
     if (response.data && response.data.success && response.data.data) {
       return response.data.data;
     }
@@ -61,7 +61,7 @@ export const staffService = {
    * Retrieves aggregate staff statistics (total, active, locked).
    */
   async getStaffStats(): Promise<StaffStats> {
-    const response = await axiosInstance.get<ApiResponse<StaffStats>>(
+    const response = await staffAxios.get<ApiResponse<StaffStats>>(
       '/v1/admin/staff/stats',
     );
     if (response.data && response.data.success && response.data.data) {
@@ -76,7 +76,7 @@ export const staffService = {
    * Creates a new staff member and triggers invitation email.
    */
   async createStaff(command: CreateStaffCommand): Promise<StaffMember> {
-    const response = await axiosInstance.post<ApiResponse<StaffMember>>(
+    const response = await staffAxios.post<ApiResponse<StaffMember>>(
       '/v1/admin/staff',
       command,
     );
@@ -92,7 +92,7 @@ export const staffService = {
    * Resends invitation setup email to a staff member.
    */
   async resendInvitation(id: string): Promise<void> {
-    const response = await axiosInstance.post<ApiResponse<void>>(
+    const response = await staffAxios.post<ApiResponse<void>>(
       `/v1/admin/staff/${id}/resend-invitation`,
     );
     if (response.data && response.data.success) {
@@ -107,7 +107,7 @@ export const staffService = {
    * Locks a staff account and revokes active sessions.
    */
   async lockStaff(id: string): Promise<StaffMember> {
-    const response = await axiosInstance.patch<ApiResponse<StaffMember>>(
+    const response = await staffAxios.patch<ApiResponse<StaffMember>>(
       `/v1/admin/staff/${id}/lock`,
     );
     if (response.data && response.data.success && response.data.data) {
@@ -122,7 +122,7 @@ export const staffService = {
    * Unlocks a previously locked staff account.
    */
   async unlockStaff(id: string): Promise<StaffMember> {
-    const response = await axiosInstance.patch<ApiResponse<StaffMember>>(
+    const response = await staffAxios.patch<ApiResponse<StaffMember>>(
       `/v1/admin/staff/${id}/unlock`,
     );
     if (response.data && response.data.success && response.data.data) {
@@ -140,7 +140,7 @@ export const staffService = {
     id: string,
     command: ChangeStaffRoleCommand,
   ): Promise<StaffMember> {
-    const response = await axiosInstance.patch<ApiResponse<StaffMember>>(
+    const response = await staffAxios.patch<ApiResponse<StaffMember>>(
       `/v1/admin/staff/${id}/role`,
       command,
     );
@@ -156,7 +156,7 @@ export const staffService = {
    * Sets initial password using the setup token from email.
    */
   async setPassword(command: SetStaffPasswordCommand): Promise<string> {
-    const response = await axiosInstance.post<ApiResponse<string>>(
+    const response = await staffAxios.post<ApiResponse<string>>(
       '/v1/auth/staff/set-password',
       command,
     );

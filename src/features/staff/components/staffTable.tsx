@@ -7,8 +7,8 @@ import {
   Lock,
   Unlock,
   Loader2,
-  Key,
 } from 'lucide-react';
+import { Can } from '../../staffAuth/components/can.tsx';
 import type { StaffPageResponse, StaffMember } from '../types/staffType';
 
 interface StaffTableProps {
@@ -82,9 +82,9 @@ export const StaffTable: React.FC<StaffTableProps> = ({
           <thead>
             <tr className="bg-surface-container text-secondary font-label-sm uppercase tracking-wider">
               <th className="py-3 px-space-md font-medium">Staff Member</th>
-              <th className="py-3 px-space-md font-medium">Internal Routing</th>
+              <th className="py-3 px-space-md font-medium">Email</th>
               <th className="py-3 px-space-md font-medium">Assigned Role</th>
-              <th className="py-3 px-space-md font-medium">2FA Protocol</th>
+              <th className="py-3 px-space-md font-medium">Created</th>
               <th className="py-3 px-space-md font-medium">Account Status</th>
               <th className="py-3 px-space-md font-medium text-right">
                 Actions
@@ -132,7 +132,7 @@ export const StaffTable: React.FC<StaffTableProps> = ({
                     </div>
                   </td>
 
-                  {/* Internal Routing */}
+                  {/* Email */}
                   <td className="py-space-md px-space-md">
                     <span className="font-body-sm text-secondary font-mono">
                       {staff.email}
@@ -146,93 +146,101 @@ export const StaffTable: React.FC<StaffTableProps> = ({
                     </span>
                   </td>
 
-                  {/* 2FA Protocol */}
+                  {/* Created */}
                   <td className="py-space-md px-space-md">
-                    <span className="inline-flex items-center gap-1 font-label-sm text-on-surface">
-                      <Key className="h-3.5 w-3.5 text-on-surface" />
-                      <span>2FA Enforced</span>
+                    <span className="font-body-sm text-secondary font-mono">
+                      {new Date(staff.createdAt).toLocaleDateString('vi-VN')}
                     </span>
                   </td>
 
                   {/* Account Status */}
                   <td className="py-space-md px-space-md">
                     {isActive ? (
-                      <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-lg bg-surface-container-high text-on-surface font-label-sm uppercase">
-                        <span className="w-1.5 h-1.5 rounded-full bg-primary" />
-                        <span>Active</span>
+                      <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-lg bg-emerald-50 text-emerald-700 border border-emerald-200 font-label-sm font-semibold uppercase">
+                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-600" />
+                        <span>ACTIVE</span>
                       </span>
                     ) : (
-                      <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-lg bg-error-container text-on-error-container font-label-sm uppercase">
-                        <span className="w-1.5 h-1.5 rounded-full bg-error" />
-                        <span>Locked</span>
+                      <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-lg bg-rose-50 text-rose-700 border border-rose-200 font-label-sm font-semibold uppercase">
+                        <span className="w-1.5 h-1.5 rounded-full bg-rose-600" />
+                        <span>LOCKED</span>
                       </span>
                     )}
                   </td>
 
                   {/* Actions */}
                   <td className="py-space-md px-space-md text-right">
-                    <div className="flex items-center justify-end gap-2">
-                      {/* Resend invite button */}
-                      <button
-                        type="button"
-                        onClick={() => onResendInvite(staff)}
-                        disabled={isResending || !isActive}
-                        title="Resend activation email"
-                        className="p-1.5 rounded-lg text-secondary hover:text-on-surface hover:bg-surface-container transition-colors disabled:opacity-30 cursor-pointer"
-                      >
-                        {isResending ? (
-                          <Loader2 className="h-3.5 w-3.5 animate-spin" />
-                        ) : (
-                          <Send className="h-3.5 w-3.5" />
-                        )}
-                      </button>
+                    <Can
+                      perform="staff:write"
+                      fallback={
+                        <span className="text-secondary text-xs font-mono">
+                          View Only
+                        </span>
+                      }
+                    >
+                      <div className="flex items-center justify-end gap-2">
+                        {/* Resend invite button */}
+                        <button
+                          type="button"
+                          onClick={() => onResendInvite(staff)}
+                          disabled={isResending || !isActive}
+                          title="Resend activation email"
+                          className="p-1.5 rounded-lg text-secondary hover:text-on-surface hover:bg-surface-container transition-colors disabled:opacity-30 cursor-pointer"
+                        >
+                          {isResending ? (
+                            <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                          ) : (
+                            <Send className="h-3.5 w-3.5" />
+                          )}
+                        </button>
 
-                      {/* Change Role Button */}
-                      <button
-                        type="button"
-                        onClick={() => onChangeRole(staff)}
-                        disabled={isSelf}
-                        title={
-                          isSelf
-                            ? 'Cannot modify own role'
-                            : 'Edit operator role'
-                        }
-                        className="px-2.5 py-1 bg-surface-container hover:bg-surface-container-high rounded-lg font-label-sm text-on-surface transition-colors disabled:opacity-40 cursor-pointer"
-                      >
-                        Edit Permissions
-                      </button>
+                        {/* Change Role Button */}
+                        <button
+                          type="button"
+                          onClick={() => onChangeRole(staff)}
+                          disabled={isSelf}
+                          title={
+                            isSelf
+                              ? 'Cannot modify own role'
+                              : 'Edit operator role'
+                          }
+                          className="px-2.5 py-1 bg-surface-container hover:bg-surface-container-high rounded-lg font-label-sm text-on-surface transition-colors disabled:opacity-40 cursor-pointer"
+                        >
+                          Edit Permissions
+                        </button>
 
-                      {/* Lock/Unlock Button */}
-                      <button
-                        type="button"
-                        onClick={() => onToggleLock(staff)}
-                        disabled={isSelf}
-                        title={
-                          isSelf
-                            ? 'Cannot lock own account'
-                            : isActive
-                              ? 'Lock operator account'
-                              : 'Unlock account'
-                        }
-                        className={`px-2 py-1 rounded-lg font-label-sm transition-colors cursor-pointer disabled:opacity-40 flex items-center gap-1 ${
-                          isActive
-                            ? 'bg-transparent hover:bg-error-container text-secondary hover:text-on-error-container'
-                            : 'bg-surface-container text-on-surface hover:bg-surface-container-high'
-                        }`}
-                      >
-                        {isActive ? (
-                          <>
-                            <Lock className="h-3.5 w-3.5" />
-                            <span>Revoke</span>
-                          </>
-                        ) : (
-                          <>
-                            <Unlock className="h-3.5 w-3.5" />
-                            <span>Unlock</span>
-                          </>
-                        )}
-                      </button>
-                    </div>
+                        {/* Lock/Unlock Button */}
+                        <button
+                          type="button"
+                          onClick={() => onToggleLock(staff)}
+                          disabled={isSelf}
+                          title={
+                            isSelf
+                              ? 'Cannot lock own account'
+                              : isActive
+                                ? 'Lock operator account'
+                                : 'Unlock account'
+                          }
+                          className={`px-2 py-1 rounded-lg font-label-sm transition-colors cursor-pointer disabled:opacity-40 flex items-center gap-1 ${
+                            isActive
+                              ? 'bg-transparent hover:bg-error-container text-secondary hover:text-on-error-container'
+                              : 'bg-surface-container text-on-surface hover:bg-surface-container-high'
+                          }`}
+                        >
+                          {isActive ? (
+                            <>
+                              <Lock className="h-3.5 w-3.5" />
+                              <span>Revoke</span>
+                            </>
+                          ) : (
+                            <>
+                              <Unlock className="h-3.5 w-3.5" />
+                              <span>Unlock</span>
+                            </>
+                          )}
+                        </button>
+                      </div>
+                    </Can>
                   </td>
                 </tr>
               );

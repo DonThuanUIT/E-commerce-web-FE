@@ -1,13 +1,18 @@
 import React from 'react';
 import type { RouteObject } from 'react-router-dom';
 import { StaffAdminPage } from '../pages/admin/staff/page';
+import { StaffAdminLoginPage } from '../pages/admin/login/page';
 import { StaffSetPasswordPage } from '../pages/auth/staff/setPassword/page';
 import { PlaceholderAdminPage } from '../pages/admin/placeholderPage';
 
 /**
- * Route definitions for Staff Management, Password Setup, and Admin Operations Placeholders.
+ * Route definitions for Staff Management, Authentication, Password Setup, and Admin Operations Placeholders.
  */
 export const staffRoutes: RouteObject[] = [
+  {
+    path: '/admin/login',
+    element: React.createElement(StaffAdminLoginPage),
+  },
   {
     path: '/admin/staff',
     element: React.createElement(StaffAdminPage),

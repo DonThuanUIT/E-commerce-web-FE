@@ -314,8 +314,8 @@ export const VariantSelector: React.FC<VariantSelectorProps> = ({
             <p className="flex items-center gap-1.5 font-medium text-emerald-700">
               <span className="h-2 w-2 rounded-full bg-emerald-500" />
               Ready for Dispatch •{' '}
-              <strong>{activeVariant.availableStock}</strong> pieces remaining in
-              atelier inventory
+              <strong>{activeVariant.availableStock}</strong> pieces remaining
+              in atelier inventory
             </p>
           ) : (
             <p className="flex items-center gap-1.5 font-medium text-rose-600">
@@ -382,8 +382,8 @@ export const VariantSelector: React.FC<VariantSelectorProps> = ({
               EXPEDITED INSURED COURIER
             </p>
             <p className="text-neutral-600">
-              Complimentary domestic delivery within 2-4 business days with signature
-              inspection upon delivery.
+              Complimentary domestic delivery within 2-4 business days with
+              signature inspection upon delivery.
             </p>
           </div>
         </div>

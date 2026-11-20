@@ -9,6 +9,7 @@ import {
   useChangeStaffRole,
   useResendInvitation,
 } from '../hooks/useStaff';
+import { useCurrentStaffId } from '../hooks/useCurrentStaffId';
 import { StaffHeader } from './staffHeader';
 import { StaffFilters } from './staffFilters';
 import { StaffTable } from './staffTable';
@@ -30,6 +31,8 @@ export const StaffManagement: React.FC = () => {
   const [selectedStaffForLock, setSelectedStaffForLock] =
     useState<StaffMember | null>(null);
   const [resendingStaffId, setResendingStaffId] = useState<string | null>(null);
+
+  const currentStaffId = useCurrentStaffId();
 
   const { data, isLoading, isError, error } = useStaffList({
     keyword: keyword || undefined,
@@ -138,6 +141,7 @@ export const StaffManagement: React.FC = () => {
         isLoading={isLoading}
         isError={isError}
         error={error}
+        currentStaffId={currentStaffId}
         onPageChange={setPage}
         onChangeRole={(staff) => setSelectedStaffForRole(staff)}
         onToggleLock={(staff) => setSelectedStaffForLock(staff)}
