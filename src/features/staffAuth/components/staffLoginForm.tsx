@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useNavigate, useSearchParams, Link } from 'react-router-dom';
 import {
   Lock,
   Mail,
@@ -8,6 +8,7 @@ import {
   Loader2,
   ShieldCheck,
   AlertCircle,
+  ArrowLeft,
 } from 'lucide-react';
 import { useStaffAuthStore } from '../stores/useStaffAuthStore.ts';
 
@@ -50,45 +51,57 @@ export const StaffLoginForm: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen w-full flex flex-col justify-center items-center bg-[#0B0F19] text-white px-4 py-12 relative overflow-hidden">
-      {/* Subtle background ambient gradients */}
-      <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[400px] bg-gradient-to-tr from-blue-600/10 via-purple-600/10 to-indigo-600/10 blur-[120px] pointer-events-none rounded-full" />
-
-      <div className="w-full max-w-md relative z-10">
-        {/* Brand Header */}
-        <div className="text-center mb-8">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/10 text-xs font-mono text-neutral-400 mb-4 tracking-wider uppercase">
-            <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
-            <span>Strict PKI Enforced</span>
-          </div>
-          <h1 className="text-2xl sm:text-3xl font-semibold tracking-tight text-white mb-2 font-display">
-            Atelier Console
-          </h1>
-          <p className="text-sm text-neutral-400">
-            Sign in with enterprise credentials to access administrative
-            operations.
-          </p>
+    <div className="min-h-screen bg-surface-container-low flex flex-col items-center justify-center p-4">
+      {/* Brand logo top mark matching StaffSetPasswordPage & Atelier design standards */}
+      <div className="mb-6 flex items-center gap-2.5">
+        <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary text-on-primary font-headline-sm text-sm tracking-widest shadow-sm">
+          A
         </div>
+        <div className="text-left">
+          <span className="font-headline-sm text-on-surface uppercase block leading-tight">
+            ATELIER
+          </span>
+          <span className="font-label-sm text-secondary uppercase block">
+            CORE // SEC-OPS
+          </span>
+        </div>
+      </div>
 
+      <div className="w-full max-w-md">
         {/* Card Form */}
-        <div className="bg-[#111827]/90 backdrop-blur-xl border border-white/10 rounded-2xl p-6 sm:p-8 shadow-2xl">
+        <div className="rounded-xl bg-surface-container-lowest border border-[#e5e7eb] p-6 sm:p-8 shadow-xl">
+          {/* Header inside Card */}
+          <div className="mb-6">
+            <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded-md bg-surface-container border border-outline-variant text-[11px] font-label-sm text-secondary uppercase tracking-wider mb-3">
+              <ShieldCheck className="h-3.5 w-3.5 text-emerald-600" />
+              <span>Strict PKI Enforced</span>
+            </div>
+            <h1 className="font-headline-md text-on-surface uppercase">
+              Atelier Console
+            </h1>
+            <p className="font-body-sm text-secondary mt-1">
+              Sign in with authorized enterprise credentials to access
+              administrative operations.
+            </p>
+          </div>
+
           {errorMessage && (
-            <div className="mb-6 p-4 rounded-xl bg-rose-950/40 border border-rose-500/30 flex items-start gap-3 text-rose-200 text-sm animate-in fade-in">
-              <AlertCircle className="w-5 h-5 text-rose-400 shrink-0 mt-0.5" />
+            <div className="mb-5 flex items-start gap-2.5 p-3.5 rounded-lg bg-error-container border border-error text-on-error-container text-xs font-label-sm">
+              <AlertCircle className="h-4 w-4 shrink-0 text-error mt-0.5" />
               <div className="flex-1 font-medium">{errorMessage}</div>
             </div>
           )}
 
-          <form onSubmit={handleSubmit} className="space-y-5" noValidate>
+          <form onSubmit={handleSubmit} className="space-y-4" noValidate>
             <div>
               <label
                 htmlFor="staff-email"
-                className="block text-xs font-medium text-neutral-300 uppercase tracking-wider mb-2 font-mono"
+                className="block font-label-sm text-on-surface mb-1.5 uppercase"
               >
-                Work Email
+                Work Email <span className="text-error">*</span>
               </label>
               <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-neutral-400">
+                <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-on-surface-variant">
                   <Mail className="w-4 h-4" />
                 </div>
                 <input
@@ -101,7 +114,7 @@ export const StaffLoginForm: React.FC = () => {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="admin@atelier.local"
-                  className="w-full pl-10 pr-4 py-2.5 bg-white/5 border border-white/10 rounded-xl text-sm text-white placeholder-neutral-500 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition disabled:opacity-50"
+                  className="w-full rounded-lg bg-surface-container-lowest border border-[#e5e7eb] pl-10 pr-4 py-2.5 font-body-sm text-on-surface placeholder:text-on-surface-variant focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary transition-colors shadow-2xs disabled:opacity-50"
                 />
               </div>
             </div>
@@ -109,12 +122,12 @@ export const StaffLoginForm: React.FC = () => {
             <div>
               <label
                 htmlFor="staff-password"
-                className="block text-xs font-medium text-neutral-300 uppercase tracking-wider mb-2 font-mono"
+                className="block font-label-sm text-on-surface mb-1.5 uppercase"
               >
-                Password
+                Password <span className="text-error">*</span>
               </label>
               <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-neutral-400">
+                <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-on-surface-variant">
                   <Lock className="w-4 h-4" />
                 </div>
                 <input
@@ -126,13 +139,13 @@ export const StaffLoginForm: React.FC = () => {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="••••••••••••"
-                  className="w-full pl-10 pr-11 py-2.5 bg-white/5 border border-white/10 rounded-xl text-sm text-white placeholder-neutral-500 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition disabled:opacity-50"
+                  className="w-full rounded-lg bg-surface-container-lowest border border-[#e5e7eb] pl-10 pr-11 py-2.5 font-body-sm text-on-surface placeholder:text-on-surface-variant focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary transition-colors shadow-2xs disabled:opacity-50"
                 />
                 <button
                   type="button"
                   tabIndex={-1}
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute inset-y-0 right-0 pr-3.5 flex items-center text-neutral-400 hover:text-neutral-200 transition"
+                  className="absolute inset-y-0 right-0 pr-3.5 flex items-center text-on-surface-variant hover:text-on-surface transition cursor-pointer"
                   aria-label={showPassword ? 'Hide password' : 'Show password'}
                 >
                   {showPassword ? (
@@ -147,7 +160,7 @@ export const StaffLoginForm: React.FC = () => {
             <button
               type="submit"
               disabled={isLoading}
-              className="w-full mt-2 py-3 px-4 bg-indigo-600 hover:bg-indigo-500 active:bg-indigo-700 text-white font-medium text-sm rounded-xl shadow-lg shadow-indigo-600/25 transition flex items-center justify-center gap-2 cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed"
+              className="w-full mt-2 py-3 px-4 bg-primary hover:bg-neutral-800 active:bg-black text-on-primary font-label-md uppercase tracking-wider rounded-lg shadow-sm transition flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {isLoading ? (
                 <>
@@ -159,12 +172,22 @@ export const StaffLoginForm: React.FC = () => {
               )}
             </button>
           </form>
+
+          <div className="mt-6 pt-4 border-t border-[#edeef0] flex items-center justify-between text-xs font-label-sm text-secondary">
+            <Link
+              to="/"
+              className="inline-flex items-center gap-1.5 hover:text-on-surface transition uppercase"
+            >
+              <ArrowLeft className="w-3.5 h-3.5" />
+              <span>Storefront</span>
+            </Link>
+            <span>SEC_OPS // TIER_01</span>
+          </div>
         </div>
 
         {/* Security Notice Footer */}
-        <p className="mt-8 text-center text-xs text-neutral-500 font-mono">
-          Authorized personnel only. All access attempts and operational actions
-          are logged and audited.
+        <p className="mt-6 text-center text-[11px] text-secondary font-label-sm uppercase tracking-wider">
+          Authorized personnel only. All access attempts and actions are logged.
         </p>
       </div>
     </div>
