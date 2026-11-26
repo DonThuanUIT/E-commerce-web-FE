@@ -21,4 +21,18 @@ export const axiosInstance = axios.create({
   },
 });
 
+axiosInstance.interceptors.request.use((config) => {
+  if (
+    typeof window !== 'undefined' &&
+    typeof window.localStorage !== 'undefined'
+  ) {
+    const token = window.localStorage.getItem('customer_access_token');
+    if (token) {
+      config.headers = config.headers ?? {};
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+  }
+  return config;
+});
+
 setupResponseInterceptor(axiosInstance);

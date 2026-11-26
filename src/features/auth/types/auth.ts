@@ -43,3 +43,15 @@ export interface RegisterFormErrors {
   acceptTerms?: string;
   general?: string;
 }
+
+export interface LoginUserRequest {
+  email: string;
+  password: string;
+}
+
+export interface CustomerSessionResponse {
+  accessToken: string;
+  tokenType: string;
+  expiresIn: number;
+  customer: RegisteredUser;
+}

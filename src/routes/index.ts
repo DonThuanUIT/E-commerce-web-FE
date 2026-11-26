@@ -1,4 +1,5 @@
 import { createBrowserRouter } from 'react-router-dom';
+import { addressRoutes } from './addressRoutes';
 import { authRoutes } from './authRoutes';
 import { homeRoutes } from './homeRoutes';
 import { productRoutes } from './productRoutes';
@@ -11,6 +12,7 @@ import { auditLogRoutes } from './auditLogRoutes';
 export const router = createBrowserRouter([
   ...homeRoutes,
   ...authRoutes,
+  ...addressRoutes,
   ...productRoutes,
   ...staffRoutes,
   ...auditLogRoutes,

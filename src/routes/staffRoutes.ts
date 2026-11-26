@@ -1,6 +1,7 @@
 import React from 'react';
 import type { RouteObject } from 'react-router-dom';
 import { StaffAdminPage } from '../pages/admin/staff/page';
+import { SizeChartAdminPage } from '../pages/admin/size-charts/page';
 import { StaffAdminLoginPage } from '../pages/admin/login/page';
 import { StaffSetPasswordPage } from '../pages/auth/staff/setPassword/page';
 import { PlaceholderAdminPage } from '../pages/admin/placeholderPage';
@@ -29,6 +30,10 @@ export const staffRoutes: RouteObject[] = [
   {
     path: '/admin/products',
     element: React.createElement(PlaceholderAdminPage),
+  },
+  {
+    path: '/admin/size-charts',
+    element: React.createElement(SizeChartAdminPage),
   },
   {
     path: '/admin/inventory',
