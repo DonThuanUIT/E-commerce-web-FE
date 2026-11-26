@@ -1,19 +1,55 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { ArrowLeft, ArrowRight, Eye, EyeOff, Headphones } from 'lucide-react';
+import { ApiRequestError } from '../../../shared/api/apiRequestError';
+import { authService } from '../services/authService';
+import { customerTokenStorage } from '../utils/customerTokenStorage';
 import { EditorialHero } from './editorialHero';
 
 /**
  * Customer sign in screen matching the Atelier luxury editorial lookbook.
  */
 const Login: React.FC = () => {
-  const [email, setEmail] = useState<string>('elena.rostova@maison.vn');
+  const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const [email, setEmail] = useState<string>('');
   const [password, setPassword] = useState<string>('');
   const [showPassword, setShowPassword] = useState<boolean>(false);
   const [rememberMe, setRememberMe] = useState<boolean>(true);
+  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setErrorMessage(null);
+
+    if (!email.trim() || !password) {
+      setErrorMessage('Please enter both your email address and password.');
+      return;
+    }
+
+    setIsSubmitting(true);
+    try {
+      const session = await authService.login({
+        email: email.trim(),
+        password,
+      });
+      customerTokenStorage.setSession(session.accessToken, session.customer);
+      const rawRedirect = searchParams.get('redirect');
+      const target =
+        rawRedirect && rawRedirect.startsWith('/') ? rawRedirect : '/';
+      navigate(target, { replace: true });
+    } catch (err) {
+      if (err instanceof ApiRequestError) {
+        setErrorMessage(err.message);
+      } else if (err instanceof Error) {
+        setErrorMessage(err.message);
+      } else {
+        setErrorMessage('Sign in failed. Please try again.');
+      }
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -63,6 +99,14 @@ const Login: React.FC = () => {
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-4">
+            {errorMessage && (
+              <div
+                role="alert"
+                className="rounded-lg border border-rose-200 bg-rose-50 px-3.5 py-2.5 text-xs text-rose-700"
+              >
+                {errorMessage}
+              </div>
+            )}
             {/* Email Address */}
             <div>
               <div className="mb-1.5 flex items-center justify-between text-xs">
@@ -140,9 +184,10 @@ const Login: React.FC = () => {
             {/* Submit Button */}
             <button
               type="submit"
-              className="mt-2 flex w-full items-center justify-center gap-2 rounded-lg bg-black py-3.5 px-4 text-xs font-semibold tracking-widest text-white uppercase transition hover:bg-neutral-800 cursor-pointer shadow-sm active:scale-[0.99]"
+              disabled={isSubmitting}
+              className="mt-2 flex w-full items-center justify-center gap-2 rounded-lg bg-black py-3.5 px-4 text-xs font-semibold tracking-widest text-white uppercase transition hover:bg-neutral-800 disabled:cursor-not-allowed disabled:opacity-60 cursor-pointer shadow-sm active:scale-[0.99]"
             >
-              <span>SIGN IN</span>
+              <span>{isSubmitting ? 'SIGNING IN...' : 'SIGN IN'}</span>
               <ArrowRight className="h-3.5 w-3.5" />
             </button>
           </form>

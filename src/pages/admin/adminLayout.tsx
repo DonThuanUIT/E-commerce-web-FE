@@ -3,6 +3,7 @@ import { NavLink, Outlet, useLocation, useNavigate } from 'react-router-dom';
 import {
   LayoutDashboard,
   Package,
+  Ruler,
   Boxes,
   Truck,
   RotateCcw,
@@ -55,6 +56,13 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({ children }) => {
       icon: Package,
       permission: 'product:read',
       ready: false,
+    },
+    {
+      name: 'Size Charts',
+      href: '/admin/size-charts',
+      icon: Ruler,
+      permission: 'product:read',
+      ready: true, // Implemented in US-32
     },
     {
       name: 'Inventory Management',
