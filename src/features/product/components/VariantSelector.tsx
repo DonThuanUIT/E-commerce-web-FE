@@ -9,6 +9,7 @@ import {
   ShieldCheck,
 } from 'lucide-react';
 import type { ProductDetail, ProductVariantDetail } from '../types/product';
+import { useProductWishlistStatus } from '../../wishlist';
 
 interface VariantSelectorProps {
   product: ProductDetail;
@@ -84,8 +85,35 @@ export const VariantSelector: React.FC<VariantSelectorProps> = ({
 
   const [selectedColor, setSelectedColor] = useState<string>(initialColor);
   const [selectedSize, setSelectedSize] = useState<string>(initialSize);
-  const [isWishlisted, setIsWishlisted] = useState<boolean>(false);
   const [addFeedback, setAddFeedback] = useState<string | null>(null);
+  const [wishlistFeedback, setWishlistFeedback] = useState<string | null>(null);
+
+  const { isWishlisted, toggleWishlist, isAuthenticated, isToggling } =
+    useProductWishlistStatus(product.id);
+
+  const handleToggleWishlist = async () => {
+    if (!isAuthenticated) {
+      setWishlistFeedback(
+        'Vui lòng đăng nhập để lưu sản phẩm vào danh sách yêu thích.',
+      );
+      setTimeout(() => setWishlistFeedback(null), 4000);
+      return;
+    }
+    try {
+      await toggleWishlist();
+      setWishlistFeedback(
+        isWishlisted
+          ? 'Đã xóa sản phẩm khỏi danh sách yêu thích'
+          : 'Đã lưu sản phẩm vào danh sách yêu thích!',
+      );
+      setTimeout(() => setWishlistFeedback(null), 3000);
+    } catch {
+      setWishlistFeedback(
+        'Không thể cập nhật danh sách yêu thích. Vui lòng thử lại.',
+      );
+      setTimeout(() => setWishlistFeedback(null), 3000);
+    }
+  };
 
   // 2. Identify the active variant matching selected color & size
   const activeVariant = useMemo(() => {
@@ -351,13 +379,18 @@ export const VariantSelector: React.FC<VariantSelectorProps> = ({
           {/* Wishlist Button */}
           <button
             type="button"
-            onClick={() => setIsWishlisted(!isWishlisted)}
-            title="Save to Wishlist"
+            disabled={isToggling}
+            onClick={handleToggleWishlist}
+            title={
+              isWishlisted
+                ? 'Xóa khỏi yêu thích'
+                : 'Lưu vào danh sách yêu thích'
+            }
             className={`flex h-12 w-12 items-center justify-center rounded-md border transition-all ${
               isWishlisted
                 ? 'border-rose-500 bg-rose-50 text-rose-600'
                 : 'border-neutral-300 text-neutral-600 hover:border-neutral-900 hover:text-neutral-900'
-            }`}
+            } ${isToggling ? 'opacity-50 cursor-wait' : ''}`}
           >
             <Heart
               className={`h-5 w-5 ${isWishlisted ? 'fill-current' : ''}`}
@@ -365,7 +398,12 @@ export const VariantSelector: React.FC<VariantSelectorProps> = ({
           </button>
         </div>
 
-        {/* Feedback Alert */}
+        {/* Feedback Alerts */}
+        {wishlistFeedback && (
+          <div className="rounded-md border border-neutral-300 bg-neutral-50 p-3 text-xs text-neutral-800">
+            {wishlistFeedback}
+          </div>
+        )}
         {addFeedback && (
           <div className="rounded-md border border-emerald-200 bg-emerald-50 p-3 text-xs text-emerald-800">
             {addFeedback}

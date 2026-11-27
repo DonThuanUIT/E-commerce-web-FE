@@ -4,7 +4,7 @@ import { useProductDetail } from '../../../features/product/hooks/useProductDeta
 import { ImageGallery } from '../../../features/product/components/ImageGallery';
 import { VariantSelector } from '../../../features/product/components/VariantSelector';
 import { ProductAccordion } from '../../../features/product/components/ProductAccordion';
-import { Sparkles, ArrowLeft, RefreshCw } from 'lucide-react';
+import { Sparkles, ArrowLeft, RefreshCw, Heart } from 'lucide-react';
 
 /**
  * Product Detail Page implementing User Story [US-09].
@@ -106,7 +106,17 @@ export const ProductDetailPage: React.FC = () => {
               New Arrivals
             </span>
           </nav>
-          <div className="text-xs text-neutral-500">Concierge 24/7</div>
+          <div className="flex items-center gap-4 text-xs">
+            <Link
+              to="/wishlist"
+              className="flex items-center gap-1.5 text-neutral-600 transition-colors hover:text-neutral-900"
+            >
+              <Heart className="h-3.5 w-3.5" />
+              <span>Yêu thích</span>
+            </Link>
+            <span className="text-neutral-300">|</span>
+            <span className="text-neutral-500">Concierge 24/7</span>
+          </div>
         </div>
       </header>
 
