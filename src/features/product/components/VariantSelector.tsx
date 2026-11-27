@@ -10,6 +10,7 @@ import {
 } from 'lucide-react';
 import type { ProductDetail, ProductVariantDetail } from '../types/product';
 import { useProductWishlistStatus } from '../../wishlist';
+import { SizeGuideModal } from './SizeGuideModal';
 
 interface VariantSelectorProps {
   product: ProductDetail;
@@ -85,6 +86,7 @@ export const VariantSelector: React.FC<VariantSelectorProps> = ({
 
   const [selectedColor, setSelectedColor] = useState<string>(initialColor);
   const [selectedSize, setSelectedSize] = useState<string>(initialSize);
+  const [isSizeGuideOpen, setIsSizeGuideOpen] = useState(false);
   const [addFeedback, setAddFeedback] = useState<string | null>(null);
   const [wishlistFeedback, setWishlistFeedback] = useState<string | null>(null);
 
@@ -254,7 +256,8 @@ export const VariantSelector: React.FC<VariantSelectorProps> = ({
             </span>
             <button
               type="button"
-              className="flex items-center gap-1 text-neutral-600 underline underline-offset-2 hover:text-neutral-900"
+              onClick={() => setIsSizeGuideOpen(true)}
+              className="flex cursor-pointer items-center gap-1 text-neutral-600 underline underline-offset-2 transition-colors hover:text-neutral-900"
             >
               <Ruler className="h-3.5 w-3.5" />
               <span>Size & Fit Guide</span>
@@ -439,6 +442,13 @@ export const VariantSelector: React.FC<VariantSelectorProps> = ({
           </div>
         </div>
       </div>
+
+      {/* 6. Size & Fit Guide Modal (US-09 / US-32) */}
+      <SizeGuideModal
+        isOpen={isSizeGuideOpen}
+        onClose={() => setIsSizeGuideOpen(false)}
+        productName={product.name}
+      />
     </div>
   );
 };
