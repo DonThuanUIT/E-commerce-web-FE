@@ -5,6 +5,7 @@ import { homeRoutes } from './homeRoutes';
 import { productRoutes } from './productRoutes';
 import { staffRoutes } from './staffRoutes';
 import { auditLogRoutes } from './auditLogRoutes';
+import { wishlistRoutes } from './wishlistRoutes';
 
 /**
  * Shared browser-history router composing all application routes.
@@ -14,6 +15,7 @@ export const router = createBrowserRouter([
   ...authRoutes,
   ...addressRoutes,
   ...productRoutes,
+  ...wishlistRoutes,
   ...staffRoutes,
   ...auditLogRoutes,
 ]);
